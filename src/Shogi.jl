@@ -5,8 +5,7 @@ module Shogi
 include("util.jl")
 include("sengo.jl")
 include("tesuu.jl")
-
-# include("koma.jl")
+include("koma.jl")
 # include("masu.jl")
 # include("mochigoma.jl")
 # include("banmen.jl")

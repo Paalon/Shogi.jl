@@ -16,6 +16,13 @@ using Shogi
 
 @test Integer(next(Tesuu(23))) == 24
 
+# Koma
+
+@test Koma("金将") |> isomote
+@test Koma("成銀") |> isnarigoma
+@test "と金" |> Koma |> sfen == "+P"
+@test Koma("杏", style=:ichiji) |> sfen == "+L"
+
 # let
 #     mochigoma = Mochigoma()
 #     mochigoma.komasuu[8] += 1

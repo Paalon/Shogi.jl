@@ -1,6 +1,6 @@
 # Copyright 2021-11-25 Koki Fushimi
 
-export Sengo, issente, sfen
+export Sengo, issente, sfen, next
 
 import Base
 show, sign
