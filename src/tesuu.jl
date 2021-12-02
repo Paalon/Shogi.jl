@@ -1,6 +1,9 @@
 # Copyright 2021-11-25 Koki Fushimi
 
-export Tesuu
+export Tesuu, sfen, next
+
+import Base:
+    Integer
 
 struct Tesuu
     n::Integer
@@ -19,3 +22,5 @@ Tesuu(char::AbstractChar) = Tesuu(string(char))
 sfen(tesuu::Tesuu) = string(tesuu.n)
 
 next(tesuu::Tesuu) = Tesuu(tesuu.n + 1)
+
+Base.Integer(tesuu::Tesuu) = tesuu.n

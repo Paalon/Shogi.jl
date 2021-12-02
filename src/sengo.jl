@@ -41,14 +41,14 @@ sfen(sengo::Sengo) = ifelse(issente(sengo), "b", "w")
 
 Return next turn's state.
 """
-next(sengo::Sengo) = Sengo(!issengo(sengo))
+next(sengo::Sengo) = Sengo(!issente(sengo))
 
 """
     sign(sengo::Sengo)
 
 Return `+1` if `sengo` is `sente`, `-1` otherwise.
 """
-Base.sign(sengo::Sengo) = ifelse(issengo(sengo), +1, -1)
+Base.sign(sengo::Sengo) = ifelse(issente(sengo), +1, -1)
 
 # function Base.show(io::IO, sengo::Sengo)
 #     if Integer(sengo)
