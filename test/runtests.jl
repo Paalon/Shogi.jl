@@ -20,8 +20,14 @@ using Shogi
 
 @test Koma("金将") |> isomote
 @test Koma("成銀") |> isnarigoma
+@test Koma("+R"; style=:sfen) == Koma("竜"; style=:ichiji)
 @test "と金" |> Koma |> sfen == "+P"
 @test Koma("杏", style=:ichiji) |> sfen == "+L"
+
+# Masu
+
+@test Masu(Koma("竜王"), Sengo("b")) == Masu("+R")
+@test Masu(Koma("竜王"), Sengo("w")) == Masu("+r")
 
 # let
 #     mochigoma = Mochigoma()
