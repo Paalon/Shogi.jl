@@ -11,7 +11,6 @@ include("mochigoma.jl")
 include("banmen.jl")
 include("kyokumen.jl")
 include("move.jl")
-# include("kifu.jl")
-# include("SFEN.jl")
+include("kifu.jl")
 
 end
