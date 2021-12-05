@@ -59,9 +59,16 @@ let
     @test sfen(banmen) == "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL"
 end
 
-# let
-#     mochigoma = Mochigoma()
-#     mochigoma.komasuu[8] += 1
-#     @test mochigoma[歩兵] == 1
-# end
+# Kyokumen
 
+function test_kyokumen_from_sfen(str::AbstractString)
+    kyokumen = Kyokumen(str)
+    @test sfen(kyokumen) == str
+end
+
+let
+    "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1" |> test_kyokumen_from_sfen
+    "lnsgk1snl/6gb1/p1pppp2p/6R2/9/1rP6/P2PPPP1P/1BG6/LNS1KGSNL w 3P2p 16" |> test_kyokumen_from_sfen
+    "lnsgk1snl/6g2/p1pppp2p/6R2/5b3/1rP6/P2PPPP1P/1SG4S1/LN2KG1NL b B4Pp 21" |> test_kyokumen_from_sfen
+    "lnsgk1sn+B/6g2/p1pppp2p/7p1/5b3/2P6/P2PPPP1P/2G4S1/LN2KG1NL w RL4Prs 28" |> test_kyokumen_from_sfen
+end
