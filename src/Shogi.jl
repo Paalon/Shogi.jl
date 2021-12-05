@@ -10,7 +10,7 @@ include("masu.jl")
 include("mochigoma.jl")
 include("banmen.jl")
 include("kyokumen.jl")
-# include("move.jl")
+include("move.jl")
 # include("kifu.jl")
 # include("SFEN.jl")
 

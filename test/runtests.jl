@@ -72,3 +72,17 @@ let
     "lnsgk1snl/6g2/p1pppp2p/6R2/5b3/1rP6/P2PPPP1P/1SG4S1/LN2KG1NL b B4Pp 21" |> test_kyokumen_from_sfen
     "lnsgk1sn+B/6g2/p1pppp2p/7p1/5b3/2P6/P2PPPP1P/2G4S1/LN2KG1NL w RL4Prs 28" |> test_kyokumen_from_sfen
 end
+
+# Move
+
+function test_move_from_sfen(str::AbstractString)
+    @test AbstractMove(str) |> sfen == str
+end
+
+test_move_from_sfen("2g2f")
+test_move_from_sfen("2h2b+")
+test_move_from_sfen("8b8h+")
+test_move_from_sfen("2b2h")
+test_move_from_sfen("9i1a+")
+test_move_from_sfen("P*8g")
+test_move_from_sfen("B*5e")
