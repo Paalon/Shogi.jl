@@ -62,7 +62,7 @@ function parse_mochigoma(str)
     mochigoma
 end
 
-function Kyokumen(str::AbstractString)
+function Kyokumen(str::AbstractString; style=:sfen)
     banmen_str, teban_str, mochigoma_str, tesuu_str = split(str, " ")
     banmen = Banmen(banmen_str)
     mochigoma = parse_mochigoma(mochigoma_str)
