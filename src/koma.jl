@@ -90,6 +90,10 @@ function Koma(str::AbstractString; style = :niji)
     end
 end
 
+function Koma(char::AbstractChar; style=:niji)
+    Koma(string(char); style=style)
+end
+
 """
     sfen(koma::Koma)
 
