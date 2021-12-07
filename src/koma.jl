@@ -90,8 +90,8 @@ function Koma(str::AbstractString; style = :niji)
     end
 end
 
-function Koma(char::AbstractChar; style=:niji)
-    Koma(string(char); style=style)
+function Koma(char::AbstractChar; style = :niji)
+    Koma(string(char); style = style)
 end
 
 """
@@ -100,7 +100,7 @@ end
 Return SFEN string for the state.
 """
 function sfen(koma::Koma)
-    string(koma; style=:sfen)
+    string(koma; style = :sfen)
 end
 
 function show(io::IO, koma::Koma)

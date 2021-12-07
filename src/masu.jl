@@ -3,7 +3,7 @@
 export Masu, Koma, sfen, jishogi_score
 
 import Base:
-    sign, string, show
+    sign, string, show, isempty
 using Bijections
 
 @enum Masu::Int8 begin
@@ -72,11 +72,39 @@ const masu_to_sfen = make_bijection_masu_to_string(list_masu_to_sfen)
 const masu_to_original = make_bijection_masu_to_string(list_masu_to_original)
 const masu_to_yaneuraou = make_bijection_masu_to_string(list_masu_to_yaneuraou)
 
+function issente(masu::Masu)
+    Integer(masu) > 0
+end
+
+function isgote(masu::Masu)
+    Integer(masu) < 0
+end
+
+function isempty(masu::Masu)
+    masu == 空き枡
+end
+
+function Sengo(masu::Masu)
+    if issente(masu)
+        sente
+    elseif isgote(masu)
+        gote
+    else
+        nothing
+    end
+end
+
+Base.sign(masu::Masu) = sign(Integer(masu))
+
 Koma(masu::Masu) = Koma(abs(Integer(masu)))
 
 Masu(koma::Koma, sengo::Sengo) = Masu(sign(sengo) * Integer(koma))
 
-Base.sign(masu::Masu) = sign(Integer(masu))
+function isomote(masu::Masu)
+    if !isempty(masu)
+        Integer(masu) % 2 == 0
+    end
+end
 
 function string(masu::Masu; style = :sfen)
     if style == :sfen
@@ -103,7 +131,7 @@ function Masu(str::AbstractString; style = :sfen)
 end
 
 function sfen(masu::Masu)
-    string(masu; style=:sfen)
+    string(masu; style = :sfen)
 end
 
 function jishogi_score(masu::Masu)

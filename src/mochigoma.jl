@@ -3,7 +3,8 @@
 export Mochigoma
 
 import Base:
-    getindex, setindex!, string, show
+    copy, getindex, setindex!, string, show
+using StaticArrays
 
 """
     Mochigoma
@@ -11,11 +12,15 @@ import Base:
 Type for mochigoma of shogi.
 """
 mutable struct Mochigoma
-    komasuus::Vector{Int8}
+    komasuus::MVector{8, Int8}
 end
 
 function Mochigoma()
-    Mochigoma(zeros(Int8, 8))
+    Mochigoma(MVector{8, Int8}(zeros(Int8, 8)))
+end
+
+function Base.copy(mochigoma::Mochigoma)
+    Mochigoma(copy(mochigoma.komasuus))
 end
 
 mochigoma_index(koma::Koma) = Integer(koma) ÷ 2
