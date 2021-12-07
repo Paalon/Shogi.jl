@@ -2,6 +2,16 @@ using Test
 
 using Shogi
 
+# SFEN for test
+
+const kyokumen_sfen_strings = [
+    "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
+    "lnsgk1snl/6gb1/p1pppp2p/6R2/9/1rP6/P2PPPP1P/1BG6/LNS1KGSNL w 3P2p 16"
+    "lnsgk1snl/6g2/p1pppp2p/6R2/5b3/1rP6/P2PPPP1P/1SG4S1/LN2KG1NL b B4Pp 21"
+    "lnsgk1sn+B/6g2/p1pppp2p/7p1/5b3/2P6/P2PPPP1P/2G4S1/LN2KG1NL w RL4Prs 28"
+    "8l/1l+R2P3/p2pBG1pp/kps1p4/Nn1P2G2/P1P1P2PP/1PS6/1KSG3+r1/LN2+p3L w Sbgn3p 124"
+]
+
 # Sengo
 
 @test Sengo(true) == Sengo("b")
@@ -28,6 +38,11 @@ using Shogi
 
 @test Masu(Koma("竜王"), Sengo("b")) == Masu("+R")
 @test Masu(Koma("竜王"), Sengo("w")) == Masu("+r")
+@test isempty(Masu("1", style = :sfen))
+@test !isempty(Masu("P", style = :sfen))
+@test isomote(Masu("L", style = :sfen))
+@test isomote(Masu("p", style = :sfen))
+@test !isomote(Masu("+p", style = :sfen))
 
 # Mochigoma
 
@@ -66,11 +81,8 @@ function test_kyokumen_from_sfen(str::AbstractString)
     @test sfen(kyokumen) == str
 end
 
-let
-    "lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1" |> test_kyokumen_from_sfen
-    "lnsgk1snl/6gb1/p1pppp2p/6R2/9/1rP6/P2PPPP1P/1BG6/LNS1KGSNL w 3P2p 16" |> test_kyokumen_from_sfen
-    "lnsgk1snl/6g2/p1pppp2p/6R2/5b3/1rP6/P2PPPP1P/1SG4S1/LN2KG1NL b B4Pp 21" |> test_kyokumen_from_sfen
-    "lnsgk1sn+B/6g2/p1pppp2p/7p1/5b3/2P6/P2PPPP1P/2G4S1/LN2KG1NL w RL4Prs 28" |> test_kyokumen_from_sfen
+for str in kyokumen_sfen_strings
+    test_kyokumen_from_sfen(str)
 end
 
 # Move
@@ -91,3 +103,13 @@ test_move_from_sfen("B*5e")
 
 @test sfen(Kifu()) == "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
 @test sfen(Kifu("position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d")) == "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 2g2f 8c8d"
+
+# coding
+
+@test encode(Masu("K", style = :sfen)) == ""
+@test encode(Masu("k", style = :sfen)) == ""
+@test encode(Masu("1", style = :sfen)) == "0"
+
+for str in kyokumen_sfen_strings
+    @test str |> Kyokumen |> bitstring |> length == 256
+end

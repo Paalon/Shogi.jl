@@ -13,4 +13,6 @@ include("kyokumen.jl")
 include("move.jl")
 include("kifu.jl")
 
+include("coding.jl")
+
 end
