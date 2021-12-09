@@ -1,3 +1,4 @@
+# Copyright 2021-12-07 Koki Fushimi
 # 将棋の局面をハフマン符号で圧縮する。
 # 256 bit に圧縮する。
 # https://www.nara-wu.ac.jp/math/personal/shinoda/legal.pdf より
@@ -9,8 +10,32 @@ export encode, decode
 import Base:
     bitstring
 
-function encode(sengo::Sengo)
+function Base.bitstring(sengo::Sengo)
     ifelse(issente(sengo), "1", "0")
+end
+
+function decode_sengo(str::AbstractString)
+    if str == "1"
+        sente
+    elseif str == "0"
+        gote
+    else
+        error("Invalid code: $str")
+    end
+end
+
+function decode_sengo(str::AbstractString, state)
+    valstate = iterate(str, state)
+    if !isnothing(valstate)
+        char, state = valstate
+        if char == '1'
+            sente, state
+        else
+            gote, state
+        end
+    else
+        nothing
+    end
 end
 
 const koma_code = Dict(
@@ -29,8 +54,86 @@ const koma_code = Dict(
     竜王 => "111111",
 )
 
-function encode(koma::Koma)
+function Base.bitstring(koma::Koma)
     koma_code[koma]
+end
+
+function decode_koma(str::AbstractString, state)
+    char, state = iterate(str, state)
+    koma = if char == '0'
+        # 歩兵・と金
+        char, state = iterate(str, state)
+        if char == '0'
+            歩兵
+        else
+            と金
+        end
+    else
+        # 香車・成香・桂馬・成桂・銀将・成銀・金将・角行・竜馬・飛車・竜王
+        char, state = iterate(str, state)
+        if char == '0'
+            # 香車・成香・桂馬・成桂
+            char, state = iterate(str, state)
+            if char == '0'
+                # 香車・成香
+                char, state = iterate(str, state)
+                if char == '0'
+                    香車
+                else
+                    成香
+                end
+            else
+                # 桂馬・成桂
+                char, state = iterate(str, state)
+                if char == '0'
+                    桂馬
+                else
+                    成桂
+                end
+            end
+        else
+            # 銀将・成銀・金将・角行・竜馬・飛車・竜王
+            char, state = iterate(str, state)
+            if char == '0'
+                # 銀将・成銀
+                char, state = iterate(str, state)
+                if char == '0'
+                    銀将
+                else
+                    # 成銀
+                    成銀
+                end
+            else
+                # 金将・角行・竜馬・飛車・竜王
+                char, state = iterate(str, state)
+                if char == '0'
+                    # 金将
+                    金将
+                else
+                    # 角行・竜馬・飛車・竜王
+                    char, state = iterate(str, state)
+                    if char == '0'
+                        # 角行・竜馬
+                        char, state = iterate(str, state)
+                        if char == '0'
+                            角行
+                        else
+                            竜馬
+                        end
+                    else
+                        # 飛車・竜王
+                        char, state = iterate(str, state)
+                        if char == '0'
+                            飛車
+                        else
+                            竜王
+                        end
+                    end
+                end
+            end
+        end
+    end
+    koma, state
 end
 
 const masu_code = let
@@ -43,41 +146,42 @@ const masu_code = let
         elseif Koma(masu) == 玉将
         else
             existence = "1"
-            sengo = encode(Sengo(masu))
-            koma = encode(Koma(masu))
+            sengo = bitstring(Sengo(masu))
+            koma = bitstring(Koma(masu))
         end
         ret[masu] = "$koma$sengo$existence"
     end
     ret
 end
 
-function encode(masu::Masu)
+function Base.bitstring(masu::Masu)
     masu_code[masu]
 end
 
-function encode(banmen::Banmen)
+function decode_masu(str::AbstractString, state)
+    char, state = iterate(str, state)
+    masu = if char == '0'
+        空き枡
+    else
+        sengo, state = decode_sengo(str, state)
+        koma, state = decode_koma(str, state)
+        Masu(koma, sengo)
+    end
+    masu, state
+end
+
+function Base.bitstring(banmen::Banmen)
     sentekp = UInt8(81)
     gotekp = UInt8(81)
     code = ""
-    count_empty = 0
-    code_empty = ""
-    count_pawn = 0
-    code_pawn = ""
-    for i = 1:9, j = 1:9
+    for i = 9:-1:1, j = 9:-1:1
         masu = banmen[i, j]
         if masu == ☗玉将
             sentekp = UInt8(9(i - 1) + (j - 1))
         elseif masu == ☖玉将
             gotekp = UInt8(9(i - 1) + (j - 1))
         else
-            code = "$code$(encode(masu))"
-            if isempty(masu)
-                count_empty += 1
-                code_empty *= encode(masu)
-            elseif Koma(masu) == 歩兵
-                count_pawn += 1
-                code_pawn *= encode(masu)
-            end
+            code = "$code$(bitstring(masu))"
         end
     end
     n = bitstring(gotekp)[2:end] * bitstring(sentekp)[2:end]
@@ -85,62 +189,99 @@ function encode(banmen::Banmen)
     code
 end
 
-function encode(mochigoma::@NamedTuple {sente::Mochigoma, gote::Mochigoma})
+function Base.bitstring(mochigoma::@NamedTuple {sente::Mochigoma, gote::Mochigoma})
     code = ""
     for (i, n) in enumerate(mochigoma.sente.komasuus)
         koma = KomaFromMochigomaIndex(i)
         for k = 1:n
-            code = "$(encode(koma))$(encode(sente))$(code)"
+            code = "$(bitstring(koma))$(bitstring(sente))$(code)"
         end
     end
     for (i, n) in enumerate(mochigoma.gote.komasuus)
         koma = KomaFromMochigomaIndex(i)
         for k = 1:n
-            code = "$(encode(koma))$(encode(gote))$(code)"
+            code = "$(bitstring(koma))$(bitstring(gote))$(code)"
         end
     end
     code
 end
 
 function Base.bitstring(kyokumen::Kyokumen)
-    code_banmen = encode(kyokumen.banmen)
-    code_mochigoma = encode(kyokumen.mochigoma)
-    code_teban = encode(kyokumen.teban)
+    code_banmen = bitstring(kyokumen.banmen)
+    code_mochigoma = bitstring(kyokumen.mochigoma)
+    code_teban = bitstring(kyokumen.teban)
     code = "$code_mochigoma$code_banmen$code_teban"
     code
 end
 
-function encode(kyokumen::Kyokumen; base)
+"""
+    encode(kyokumen::Kyokumen; base=16)
+
+Encode a `kyokumen` to a string in the given `base`.
+"""
+function encode(kyokumen::Kyokumen; base=16)
     str = bitstring(kyokumen)
     n = parse(BigInt, str, base = 2)
     string(n, base = base, pad = ceil(Int, 256 / log2(base)))
 end
 
-function decode(str::AbstractString; base)
-    n = parse(BigInt, str, base = base)
-    string(n, base = 2, pad = 256)
-end
-
-function decode_kp(str::AbstractString)
-    n = parse(Int8, str; base = 2)
+function decode_index(n::Integer)
     x = n ÷ 9 + 1
     y = n % 9 + 1
     x, y
 end
 
-function split_banmen_code(str::AbstractString) end
+function decode_kp(str::AbstractString)
+    n = parse(Int8, str; base = 2)
+    decode_index(n)
+end
 
-function decode_banmen(str::AbstractString)
-    sentekp = str[end-7+1:end] |> decode_kp
-    gotekp = str[end-14+1:end-7] |> decode_kp
-    str = str[1:end-14]
+function decode_kyokumen(str::AbstractString)
+    # decode teban
+    teban = decode_sengo(str[end:end])
+
+    # decode banmen
     banmen = Banmen()
+    sentekp = decode_kp(str[end-7:end-1])
+    gotekp = decode_kp(str[end-14:end-8])
     banmen[sentekp...] = ☗玉将
     banmen[gotekp...] = ☖玉将
-    for i = 1:9, j = 1:9
+    banmen_mochigoma_str = reverse(str[1:end-15])
+    n = 0
+    state = 1
+    while n ≠ 81
+        # decode masu
+        i, j = decode_index(n)
         if (i, j) ≠ sentekp && (i, j) ≠ gotekp
-            # banmen[i, j] = 
+            # 玉将の位置はスキップする。
+            masu, state = decode_masu(banmen_mochigoma_str, state)
+            banmen[i, j] = masu
+        end
+        n += 1
+    end
+
+    # decode mochigoma
+    mochigoma = (sente = Mochigoma(), gote = Mochigoma())
+    while checkbounds(Bool, banmen_mochigoma_str, state)
+        sengo, state = decode_sengo(banmen_mochigoma_str, state)
+        koma, state = decode_koma(banmen_mochigoma_str, state)
+        if issente(sengo)
+            mochigoma.sente[koma] += 1
+        else
+            mochigoma.gote[koma] += 1
         end
     end
-    banmen
+
+    Kyokumen(banmen, mochigoma, teban)
+end
+
+"""
+    decode(str::AbstractString; base=16)
+
+Decode a encoded string in the given `base` to a `kyokumen`.
+"""
+function decode(str::AbstractString; base = 16)
+    n = parse(BigInt, str, base = base)
+    bitstr = string(n, base = 2, pad = 256)
+    decode_kyokumen(bitstr)
 end

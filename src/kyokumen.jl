@@ -1,6 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export Kyokumen, sfen, teban_mochigoma
+export SFENKyokumen
 
 import Base:
     show, sign
@@ -17,7 +18,6 @@ mutable struct Kyokumen
         gote::Mochigoma
     end
     teban::Sengo
-    tesuu::Tesuu
 end
 
 function Kyokumen()
@@ -27,12 +27,11 @@ function Kyokumen()
             sente = Mochigoma(),
             gote = Mochigoma(),
         ),
-        sente,
-        Tesuu(1),
+        sente
     )
 end
 
-function parse_mochigoma(str)
+function parse_mochigoma(str::AbstractString)
     mochigoma = (
         sente = Mochigoma(),
         gote = Mochigoma(),
@@ -63,12 +62,11 @@ function parse_mochigoma(str)
 end
 
 function Kyokumen(str::AbstractString; style = :sfen)
-    banmen_str, teban_str, mochigoma_str, tesuu_str = split(str, " ")
+    banmen_str, teban_str, mochigoma_str = split(str, " ")
     banmen = Banmen(banmen_str)
     mochigoma = parse_mochigoma(mochigoma_str)
     teban = Sengo(teban_str)
-    tesuu = Tesuu(tesuu_str)
-    Kyokumen(banmen, mochigoma, teban, tesuu)
+    Kyokumen(banmen, mochigoma, teban)
 end
 
 function Base.show(io::IO, kyokumen::Kyokumen)
@@ -76,7 +74,7 @@ function Base.show(io::IO, kyokumen::Kyokumen)
     println(io, "先手持ち駒: ", kyokumen.mochigoma.sente)
     println(io, "後手持ち駒: ", kyokumen.mochigoma.gote)
     println(io, kyokumen.teban)
-    println(io, "$(kyokumen.tesuu.n - 1) 手目")
+    # println(io, "$(kyokumen.tesuu.n - 1) 手目")
 end
 
 function sfen(kyokumen::Kyokumen)
@@ -88,8 +86,7 @@ function sfen(kyokumen::Kyokumen)
         mochigoma = "-"
     end
     teban = sfen(kyokumen.teban)
-    tesuu = sfen(kyokumen.tesuu)
-    "$banmen $teban $mochigoma $tesuu"
+    "$banmen $teban $mochigoma"
 end
 
 function Base.string(kyokumen::Kyokumen)
@@ -100,9 +97,9 @@ function issente(kyokumen::Kyokumen)
     issente(kyokumen.teban)
 end
 
-function Base.sign(kyokumen::Kyokumen)
-    sign(kyokumen.teban)
-end
+# function Base.sign(kyokumen::Kyokumen)
+#     sign(kyokumen.teban)
+# end
 
 function teban_mochigoma(kyokumen::Kyokumen)
     if issente(kyokumen)
@@ -112,11 +109,11 @@ function teban_mochigoma(kyokumen::Kyokumen)
     end
 end
 
-function next!(kyokumen::Kyokumen)
-    kyokumen.teban = next(kyokumen.teban)
-    kyokumen.tesuu = next(kyokumen.tesuu)
-    kyokumen
-end
+# function next!(kyokumen::Kyokumen)
+#     kyokumen.teban = next(kyokumen.teban)
+#     kyokumen.tesuu = next(kyokumen.tesuu)
+#     kyokumen
+# end
 
 function capture!(kyokumen::Kyokumen, x::Integer, y::Integer)
     koma_omote = KomaOmote(abs(kyokumen.banmen[x, y]).n ÷ 2)
@@ -142,4 +139,37 @@ function jishogi_score(kyokumen::Kyokumen)
     sente += jishogi_score(kyokumen.mochigoma_sente)
     gote += jishogi_score(kyokumen.mochigoma_gote)
     jishogi_score(kyokumen.banmen) + sente - gote
+end
+
+"""
+    SFENKyokumen
+
+A kyokumen with tesuu.
+"""
+mutable struct SFENKyokumen
+    kyokumen::Kyokumen
+    tesuu::Tesuu
+end
+
+function sfen(sfenkyokumen::SFENKyokumen)
+    "$(sfen(sfenkyokumen.kyokumen)) $(sfen(sfenkyokumen.tesuu))"
+end
+
+function Base.string(sfenkyokumen::SFENKyokumen; style=:sfen)
+    if style == :sfen
+        sfen(sfenkyokumen)
+    else
+        error("Invalid style $style")
+    end
+end
+
+function issente(sfenkyokumen::SFENKyokumen)
+    issente(sfenkyokumen.kyokumen)
+end
+
+function SFENKyokumen(str::AbstractString)
+    banmen_str, teban_str, mochigoma_str, tesuu_str = split(str, " ")
+    kyokumen = Kyokumen(join((banmen_str, teban_str, mochigoma_str), " "))
+    tesuu = Tesuu(tesuu_str)
+    SFENKyokumen(kyokumen, tesuu)
 end
