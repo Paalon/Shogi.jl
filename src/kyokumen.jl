@@ -4,9 +4,10 @@ export Kyokumen, sfen, teban_mochigoma
 export SFENKyokumen
 
 import Base:
-    copy, ==, show, sign
+    copy, ==, show, sign,
+    getindex, setindex!
 
-    """
+"""
     Kyokumen
 
 A position state type of shogi game without history.
@@ -124,6 +125,22 @@ function teban_mochigoma(kyokumen::Kyokumen)
     else
         kyokumen.mochigoma_gote
     end
+end
+
+function Base.getindex(kyokumen::Kyokumen, i::Int)
+    kyokumen.banmen[i]
+end
+
+function Base.getindex(kyokumen::Kyokumen, i::Int, j::Int)
+    kyokumen.banmen[i, j]
+end
+
+function Base.setindex!(kyokumen::Kyokumen, masu::Masu, i::Int)
+    kyokumen.banmen[i] = masu
+end
+
+function Base.setindex!(kyokumen::Kyokumen, masu::Masu, i::Int, j::Int)
+    kyokumen.banmen[i, j] = masu
 end
 
 # function next!(kyokumen::Kyokumen)

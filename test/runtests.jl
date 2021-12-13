@@ -104,6 +104,13 @@ b = copy(a)
 b.teban = Shogi.gote
 @test a ≠ b
 
+a = Kyokumen()
+masu = a[8, 8]
+@test masu == Masu(Koma("角行"), Shogi.sente)
+a[8, 8] = Shogi.空き枡
+@test a != Kyokumen()
+@test a[8, 8] == Shogi.空き枡
+
 # SFENKyokumen
 
 isvalid_sfenkyokumen(str::AbstractString) = SFENKyokumen(str) |> sfen == str
