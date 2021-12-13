@@ -1,6 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export Koma, isomote, isura, isnarigoma, iskanagoma, iskogoma, sfen, jishogi_score
+export ispromotable, trynaru
 
 import Base:
     string, show
@@ -30,6 +31,13 @@ const isnarigoma = isura
 isoogoma(koma::Koma) = 4 ≤ Integer(koma) ≤ 7
 iskanagoma(koma::Koma) = 8 ≤ Integer(koma) ≤ 11
 iskogoma(koma::Koma) = 8 ≤ Integer(koma) ≤ 17
+
+function ispromotable(koma::Koma)
+    n = Integer(koma)
+    n % 2 == 0 && (4 ≤ n ≤ 6 || 10 ≤ n ≤ 17)
+end
+
+naru(koma::Koma) = ifelse(ispromotable(koma), Koma(Integer(koma) + 1), nothing)
 
 const list_二字竜 = ["玉将", "飛車", "竜王", "角行", "竜馬", "金将", "銀将", "成銀", "桂馬", "成桂", "香車", "成香", "歩兵", "と金"]
 const list_二字龍 = ["玉将", "飛車", "龍王", "角行", "龍馬", "金将", "銀将", "成銀", "桂馬", "成桂", "香車", "成香", "歩兵", "と金"]

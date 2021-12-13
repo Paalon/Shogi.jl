@@ -33,16 +33,12 @@ const kyokumen_sfen_strings = [
 @test Koma("+R"; style = :sfen) == Koma("竜"; style = :ichiji)
 @test "と金" |> Koma |> sfen == "+P"
 @test Koma("杏", style = :ichiji) |> sfen == "+L"
+@test ispromotable(Koma("金将")) == false
+@test naru(Koma("銀将")) == Koma("成銀")
 
 # Masu
 
-@test Masu(Koma("竜王"), Sengo("b")) == Masu("+R")
-@test Masu(Koma("竜王"), Sengo("w")) == Masu("+r")
-@test isempty(Masu("1", style = :sfen))
-@test !isempty(Masu("P", style = :sfen))
-@test isomote(Masu("L", style = :sfen))
-@test isomote(Masu("p", style = :sfen))
-@test !isomote(Masu("+p", style = :sfen))
+include("masu.jl")
 
 # Mochigoma
 
@@ -111,6 +107,11 @@ a[8, 8] = Shogi.空き枡
 @test a != Kyokumen()
 @test a[8, 8] == Shogi.空き枡
 
+a = Kyokumen()
+toru!(a, 2, 2)
+@test a[2, 2] |> isempty
+@test a.mochigoma.sente[Koma("角行")] == 1
+
 # SFENKyokumen
 
 isvalid_sfenkyokumen(str::AbstractString) = SFENKyokumen(str) |> sfen == str
@@ -130,6 +131,12 @@ isvalid_move(str::AbstractString) = AbstractMove(str) |> sfen == str
 @test isvalid_move("P*8g")
 @test isvalid_move("B*5e")
 
+kyokumen = Kyokumen()
+susumeru!(kyokumen, Move("2g2f"))
+@test kyokumen == Kyokumen("lnsgkgsnl/1r5b1/ppppppppp/9/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL w -")
+@test susumeru(kyokumen, Move("8c8d")) == Kyokumen("lnsgkgsnl/1r5b1/p1ppppppp/1p7/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL b -")
+@test kyokumen == Kyokumen("lnsgkgsnl/1r5b1/ppppppppp/9/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL w -")
+
 # Kifu
 
 # @test sfen(Kifu()) == "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"
@@ -138,9 +145,9 @@ isvalid_move(str::AbstractString) = AbstractMove(str) |> sfen == str
 # coding
 
 @test bitstring(Koma("飛車")) == "011111"
-@test bitstring(Masu("K", style = :sfen)) == ""
-@test bitstring(Masu("k", style = :sfen)) == ""
-@test bitstring(Masu("1", style = :sfen)) == "0"
+@test bitstring(MasuFromSFEN("K")) == ""
+@test bitstring(MasuFromSFEN("k")) == ""
+@test bitstring(MasuFromSFEN("1")) == "0"
 
 isvalid_kyokumen_coding_length(str::AbstractString) = Kyokumen(str) |> bitstring |> length == 256
 isvalid_kyokumen_coding(str::AbstractString) = Kyokumen(str) |> encode |> decode |> sfen == str

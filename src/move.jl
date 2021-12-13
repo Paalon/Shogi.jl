@@ -1,9 +1,15 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export AbstractMove, Move, Drop, sfen
+export susumeru!, susumeru
 
 abstract type AbstractMove end
 
+"""
+    Move <: AbstractMove
+
+Type for representing a on-board move.
+"""
 struct Move <: AbstractMove
     from_x::Int8
     from_y::Int8
@@ -21,6 +27,14 @@ function Move(str::AbstractString)
     Move(from_x, from_y, to_x, to_y, ispromote)
 end
 
+function to(move::Move)
+    move.to_x, move.to_y
+end
+
+function from(move::Move)
+    move.from_x, move.from_y
+end
+
 function sfen(move::Move)
     from_x = move.from_x |> string
     from_y = move.from_y |> integer_to_sfen_suuji
@@ -33,14 +47,24 @@ function sfen(move::Move)
     result
 end
 
+"""
+    Drop <: AbstractMove
+
+Type for representing a drop movement.
+"""
 struct Drop <: AbstractMove
     to_x::Int8
     to_y::Int8
     koma::Koma
 end
 
+"""
+    Drop(str::AbstractString)
+
+Construct a drop from SFEN string.
+"""
 function Drop(str::AbstractString)
-    koma = Koma(string(str[1]), style=:sfen)
+    koma = Koma(string(str[1]), style = :sfen)
     to_x = parse(Int8, string(str[3]))
     to_y = parse(Int8, string(sfen_suuji_to_hankaku_suuji(str[4])))
     Drop(to_x, to_y, koma)
@@ -51,6 +75,10 @@ function sfen(drop::Drop)
     to_x = drop.to_x
     to_y = drop.to_y |> integer_to_sfen_suuji
     "$koma*$to_x$to_y"
+end
+
+function to(drop::Drop)
+    drop.to_x, drop.to_y
 end
 
 # # 投了
@@ -110,3 +138,47 @@ function AbstractMove(str::AbstractString)
         throw(e)
     end
 end
+
+function susumeru!(kyokumen::Kyokumen, drop::Drop)
+    mochigoma = teban_mochigoma(kyokumen)
+    if mochigoma[drop.koma] ≥ 1 && isempty(kyokumen[to(drop)...])
+        mochigoma[drop.koma] -= 1
+        kyokumen[to(drop)...] = Masu(drop.koma, kyokumen.teban)
+    else
+        error("Fail to susumeru!")
+    end
+    kyokumen.teban = next(kyokumen.teban)
+    kyokumen
+end
+
+function susumeru!(kyokumen::Kyokumen, move::Move)
+    if !isempty(kyokumen[to(move)...])
+        toru!(kyokumen, to(move)...)
+    end
+    kyokumen[to(move)...] = if move.ispromote
+        masu = naru(kyokumen[from(move)...])
+        if isnothing(masu)
+            error("Cannot promote.")
+        else
+            masu
+        end
+    else
+        kyokumen[from(move)...]
+    end
+    kyokumen[from(move)...] = Masu(0)
+    kyokumen.teban = next(kyokumen.teban)
+    kyokumen
+end
+
+function susumeru(kyokumen::Kyokumen, move::AbstractMove)
+    kyokumen = copy(kyokumen)
+    susumeru!(kyokumen, move)
+end
+
+"""
+    susumeru!(kyokumen::Kyokumen, move::AbstractMove)
+    susumeru(kyokumen::Kyokumen, move::AbstractMove)
+
+Do the movement to the kyokumen.
+"""
+susumeru!, susumeru

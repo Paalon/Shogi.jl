@@ -1,6 +1,6 @@
 # Copyright 2021-11-25 Koki Fushimi
 
-export Kyokumen, sfen, teban_mochigoma
+export Kyokumen, sfen, teban_mochigoma, toru!
 export SFENKyokumen
 
 import Base:
@@ -121,25 +121,25 @@ end
 
 function teban_mochigoma(kyokumen::Kyokumen)
     if issente(kyokumen)
-        kyokumen.mochigoma_sente
+        kyokumen.mochigoma.sente
     else
-        kyokumen.mochigoma_gote
+        kyokumen.mochigoma.gote
     end
 end
 
-function Base.getindex(kyokumen::Kyokumen, i::Int)
+function Base.getindex(kyokumen::Kyokumen, i::Integer)
     kyokumen.banmen[i]
 end
 
-function Base.getindex(kyokumen::Kyokumen, i::Int, j::Int)
+function Base.getindex(kyokumen::Kyokumen, i::Integer, j::Integer)
     kyokumen.banmen[i, j]
 end
 
-function Base.setindex!(kyokumen::Kyokumen, masu::Masu, i::Int)
+function Base.setindex!(kyokumen::Kyokumen, masu::Masu, i::Integer)
     kyokumen.banmen[i] = masu
 end
 
-function Base.setindex!(kyokumen::Kyokumen, masu::Masu, i::Int, j::Int)
+function Base.setindex!(kyokumen::Kyokumen, masu::Masu, i::Integer, j::Integer)
     kyokumen.banmen[i, j] = masu
 end
 
@@ -149,17 +149,21 @@ end
 #     kyokumen
 # end
 
-function capture!(kyokumen::Kyokumen, x::Integer, y::Integer)
-    koma_omote = KomaOmote(abs(kyokumen.banmen[x, y]).n ÷ 2)
-    if koma_omote.n == 0
-        error("No koma in $x$y.")
-    end
-    if issente(kyokumen)
-        increment!(kyokumen.mochigoma_sente, koma_omote)
+function toru!(kyokumen::Kyokumen, x::Integer, y::Integer)
+    masu = kyokumen[x, y]
+    koma = Koma(masu)
+    sengo = Sengo(masu)
+    if !isnothing(koma) && !isnothing(sengo)
+        if kyokumen.teban ≠ sengo
+            mochigoma = teban_mochigoma(kyokumen)
+            mochigoma[koma] += 1
+            kyokumen[x, y] = Masu(0)
+        else
+            error("Cannot capture own koma.")
+        end
     else
-        increment!(kyokumen.mochigoma_gote, koma_omote)
+        error("There is no koma.")
     end
-    kyokumen.banmen[x, y] = Masu(0)
     kyokumen
 end
 

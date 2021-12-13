@@ -1,6 +1,6 @@
 # Copyright 2021-11-25 Koki Fushimi
 
-export Masu, Koma, sfen, jishogi_score
+export Masu, Koma, sfen, jishogi_score, ispromotable, naru, MasuFromSFEN
 
 import Base:
     sign, string, show, isempty
@@ -96,13 +96,42 @@ end
 
 Base.sign(masu::Masu) = sign(Integer(masu))
 
-Koma(masu::Masu) = Koma(abs(Integer(masu)))
+function Koma(masu::Masu)
+    n = Integer(masu)
+    if n == 0
+        nothing
+    else
+        Koma(abs(n))
+    end
+end
 
 Masu(koma::Koma, sengo::Sengo) = Masu(sign(sengo) * Integer(koma))
 
 function isomote(masu::Masu)
     if !isempty(masu)
         Integer(masu) % 2 == 0
+    end
+end
+
+function ispromotable(masu::Masu)
+    koma = Koma(masu)
+    if isnothing(koma)
+        nothing
+    else
+        ispromotable(koma)
+    end
+end
+
+function naru(masu::Masu)
+    koma = Koma(masu)
+    if isnothing(koma)
+        nothing
+    else
+        if ispromotable(koma)
+            Masu(naru(Koma(masu)), Sengo(masu))
+        else
+            nothing
+        end
     end
 end
 
@@ -128,6 +157,10 @@ function Masu(str::AbstractString; style = :sfen)
     else
         error("Invalid style: $style")
     end
+end
+
+function MasuFromSFEN(str::AbstractString)
+    masu_to_sfen(str)
 end
 
 function sfen(masu::Masu)

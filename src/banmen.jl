@@ -46,19 +46,19 @@ function Base.size(banmen::Banmen)
     size(banmen.matrix)
 end
 
-function Base.getindex(banmen::Banmen, i::Int)
+function Base.getindex(banmen::Banmen, i::Integer)
     Masu(banmen.matrix[i])
 end
 
-function Base.getindex(banmen::Banmen, i::Int, j::Int)
+function Base.getindex(banmen::Banmen, i::Integer, j::Integer)
     Masu(banmen.matrix[i, j])
 end
 
-function Base.setindex!(banmen::Banmen, masu::Masu, i::Int)
+function Base.setindex!(banmen::Banmen, masu::Masu, i::Integer)
     banmen.matrix[i] = Integer(masu)
 end
 
-function Base.setindex!(banmen::Banmen, masu::Masu, i::Int, j::Int)
+function Base.setindex!(banmen::Banmen, masu::Masu, i::Integer, j::Integer)
     banmen.matrix[i, j] = Integer(masu)
 end
 
