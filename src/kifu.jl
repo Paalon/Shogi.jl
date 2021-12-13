@@ -1,7 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
-export Kifu, sfen
-export add_node!, get_node, add_move!, has_node
+export Kifu, KifuFromSFEN, sfen
+export add_node!, get_node, add_move!, has_node, get_end
 
 import Base:
     show, string
@@ -19,11 +19,19 @@ function add_node!(kifu::Kifu, kyokumen::Kyokumen)
     add_vertex!(kifu.graph, :hexadecimal, str)
 end
 
-function Kifu()
+function Kifu(kyokumen::Kyokumen)
     kifu = Kifu(MetaDiGraph())
-    kyokumen = Kyokumen()
     add_node!(kifu, kyokumen)
     kifu
+end
+
+function Kifu()
+    Kifu(Kyokumen())
+end
+
+function get_end(kifu::Kifu)
+    str = get_prop(kifu.graph, vertices(kifu.graph)[end], :hexadecimal)
+    decode(str)
 end
 
 function get_node(kifu::Kifu, kyokumen::Kyokumen)
@@ -55,6 +63,26 @@ function add_move!(kifu::Kifu, kyokumen::Kyokumen, move::AbstractMove)
     kifu
 end
 
+function Kifu(kyokumen::Kyokumen, moves::Vector{<:AbstractMove})
+    kifu = Kifu(kyokumen)
+    for move in moves
+        add_move!(kifu, kyokumen, move)
+        kyokumen = get_end(kifu)
+    end
+    kifu
+end
+
+function Kifu(kyokumen::Kyokumen, move::AbstractMove)
+    Kifu(kyokumen, [move])
+end
+
+function Base.show(io::IO, kifu::Kifu)
+    print(io, "graph = ")
+    println(io, kifu.graph)
+    print(io, get_end(kifu))
+    println(io, sfen(kifu))
+end
+
 function sfen(kifu::Kifu)
     hex = get_prop(kifu.graph, 1, :hexadecimal)
     kyokumen = decode(hex)
@@ -70,6 +98,85 @@ function sfen(kifu::Kifu)
         end
     end
     str
+end
+
+# Make Kifu instance from USI position command.
+function KifuFromSFEN(str::AbstractString)
+    args = split(str, " ", limit=2)
+    if args[1] == "position" && length(args) == 2
+        # "position <args>".
+        args = split(args[2], " ", limit = 2)
+        if args[1] == "sfen" && length(args) == 2
+            # "position sfen <args>"
+            args = split(args[2])
+            if length(args) == 4
+                # "position sfen <sfen-string>"
+                sfen_str = join(args, " ")
+                kyokumen = SFENKyokumenFromSFEN(sfen_str).kyokumen
+                Kifu(kyokumen)
+            elseif args[5] == "moves" && length(args) ≥ 6
+                # "position sfen <sfen-string> moves <move-strings>"
+                sfen_str = join(args[1:4], " ")
+                move_strs = args[6:end]
+                kyokumen = SFENKyokumenFromSFEN(sfen_str).kyokumen
+                moves = AbstractMove.(move_strs)
+                Kifu(kyokumen, moves)
+            else
+                error("Does not match to `position sfen <sfenstring> (moves <move-strings>)`. $str")
+            end
+        elseif args[1] == "startpos"
+            # "position startpos (<args>)"
+            kyokumen = Kyokumen()
+            if length(args) == 1
+                # "position startpos"
+                Kifu(kyokumen)
+            else
+                # "position startpos <args>"
+                args = split(args[2], " ")
+                if args[1] == "moves"
+                    # "position startpos moves <args>"
+                    move_strs = args[2:end]
+                    moves = AbstractMove.(move_strs)
+                    Kifu(kyokumen, moves)
+                else
+                    error("Does not match to `position startpos (moves <move-strings>)`. $str")
+                end
+            end
+        else
+            error("Does not match to `position [sfen <sfenstring> | startpos]`. $str")
+        end
+    else
+        error("Does not satisfy `position <args>` format. $str")
+    end
+
+    # if terms[1] == "sfen"
+    #     terms2 = split(terms[2]; limit = 6)
+    #     if length(terms2) == 4
+    #         terms[2]
+    #         kifu.kyokumen = Kyokumen("")
+    #     elseif terms[1] == "startpos"
+    #         kifu.kyokumen = Kyokumen()
+    #         if length(terms) == 1
+    #             Kyokumen
+    #         else
+    #             terms = splitonce(terms[2])
+    #             if terms[1] == "moves"
+    #                 if length(terms) == 2
+    #                     moves = split(terms[2])
+    #                     kifu.moves = AbstractMove.(moves)
+    #                     kyokumen
+    #                 else
+    #                     error()
+    #                 end
+    #             else
+    #             end
+    #         end
+    #     else
+    #         error()
+    #     end
+    # else
+    #     error()
+    # end
 end
 
 # function startpos(kifu::Kifu)
@@ -100,86 +207,6 @@ end
 
 # function splitonce(str)
 #     split(str, " "; limit = 2)
-# end
-
-# # Make Kifu instance from USI position command.
-# function Kifu(str::AbstractString)
-#     kifu = Kifu()
-#     args = splitonce(str)
-#     if args[1] == "position" && length(args) == 2
-#         # "position <args>".
-#         args = splitonce(args[2])
-#         if args[1] == "sfen" && length(args) == 2
-#             # "position sfen <args>"
-#             args = split(args[2])
-#             if length(args) == 4
-#                 # "position sfen <sfen-string>"
-#                 sfen_str = join(args, " ")
-#                 kyokumen = Kyokumen(sfen_str, style = :sfen)
-#                 kifu.positions = [kyokumen]
-#             elseif args[5] == "moves" && length(args) ≥ 6
-#                 # "position sfen <sfen-string> moves <move-strings>"
-#                 sfen_str = join(args[1:4], " ")
-#                 move_strs = args[6:end]
-#                 kyokumen = Kyokumen(sfen_str, style = :sfen)
-#                 kifu.positions = [kyokumen]
-#                 kifu.moves = AbstractMove.(move_strs)
-#             else
-#                 error("Does not match to `position sfen <sfenstring> (moves <move-strings>)`. $str")
-#             end
-#         elseif args[1] == "startpos"
-#             # "position startpos (<args>)"
-#             kyokumen = Kyokumen()
-#             kifu.positions = [kyokumen]
-#             if length(args) == 1
-#                 # "position startpos"
-#             else
-#                 # "position startpos <args>"
-#                 args = split(args[2], " ")
-#                 if args[1] == "moves"
-#                     # "position startpos moves <args>"
-#                     move_strs = args[2:end]
-#                     kifu.moves = AbstractMove.(move_strs)
-#                 else
-#                     error("Does not match to `position startpos (moves <move-strings>)`. $str")
-#                 end
-#             end
-#         else
-#             error("Does not match to `position [sfen <sfenstring> | startpos]`. $str")
-#         end
-#     else
-#         error("Does not satisfy `position <args>` format. $str")
-#     end
-
-#     # if terms[1] == "sfen"
-#     #     terms2 = split(terms[2]; limit = 6)
-#     #     if length(terms2) == 4
-#     #         terms[2]
-#     #         kifu.kyokumen = Kyokumen("")
-#     #     elseif terms[1] == "startpos"
-#     #         kifu.kyokumen = Kyokumen()
-#     #         if length(terms) == 1
-#     #             Kyokumen
-#     #         else
-#     #             terms = splitonce(terms[2])
-#     #             if terms[1] == "moves"
-#     #                 if length(terms) == 2
-#     #                     moves = split(terms[2])
-#     #                     kifu.moves = AbstractMove.(moves)
-#     #                     kyokumen
-#     #                 else
-#     #                     error()
-#     #                 end
-#     #             else
-#     #             end
-#     #         end
-#     #     else
-#     #         error()
-#     #     end
-#     # else
-#     #     error()
-#     # end
-#     kifu
 # end
 
 # function kifu(move::Move)

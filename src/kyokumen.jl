@@ -1,7 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
-export Kyokumen, sfen, teban_mochigoma, toru!
-export SFENKyokumen
+export Kyokumen, KyokumenFromSFEN, sfen, teban_mochigoma, toru!
+export SFENKyokumen, SFENKyokumenFromSFEN
 
 import Base:
     copy, ==, show, sign,
@@ -80,6 +80,14 @@ function parse_mochigoma(str::AbstractString)
 end
 
 function Kyokumen(str::AbstractString; style = :sfen)
+    banmen_str, teban_str, mochigoma_str = split(str, " ")
+    banmen = Banmen(banmen_str)
+    mochigoma = parse_mochigoma(mochigoma_str)
+    teban = Sengo(teban_str)
+    Kyokumen(banmen, mochigoma, teban)
+end
+
+function KyokumenFromSFEN(str::AbstractString)
     banmen_str, teban_str, mochigoma_str = split(str, " ")
     banmen = Banmen(banmen_str)
     mochigoma = parse_mochigoma(mochigoma_str)
@@ -206,6 +214,13 @@ function issente(sfenkyokumen::SFENKyokumen)
 end
 
 function SFENKyokumen(str::AbstractString)
+    banmen_str, teban_str, mochigoma_str, tesuu_str = split(str, " ")
+    kyokumen = Kyokumen(join((banmen_str, teban_str, mochigoma_str), " "))
+    tesuu = parse(Int, tesuu_str)
+    SFENKyokumen(kyokumen, tesuu)
+end
+
+function SFENKyokumenFromSFEN(str::AbstractString)
     banmen_str, teban_str, mochigoma_str, tesuu_str = split(str, " ")
     kyokumen = Kyokumen(join((banmen_str, teban_str, mochigoma_str), " "))
     tesuu = parse(Int, tesuu_str)
