@@ -3,7 +3,7 @@
 export Mochigoma
 
 import Base:
-    copy, getindex, setindex!, string, show
+    copy, ==, getindex, setindex!, string, show
 using StaticArrays
 
 """
@@ -12,15 +12,19 @@ using StaticArrays
 Type for mochigoma of shogi.
 """
 mutable struct Mochigoma
-    komasuus::MVector{8, Int8}
+    komasuus::MVector{8,Int8}
 end
 
 function Mochigoma()
-    Mochigoma(MVector{8, Int8}(zeros(Int8, 8)))
+    Mochigoma(MVector{8,Int8}(zeros(Int8, 8)))
 end
 
 function Base.copy(mochigoma::Mochigoma)
     Mochigoma(copy(mochigoma.komasuus))
+end
+
+function Base.:(==)(a::Mochigoma, b::Mochigoma)
+    a.komasuus == b.komasuus
 end
 
 mochigoma_index(koma::Koma) = Integer(koma) ÷ 2
@@ -40,7 +44,7 @@ end
 Construct `Mochigoma` object from SFEN Mochigoma string.
 See detail http://shogidokoro.starfree.jp/usi.html for SFEN format in USI.
 """
-function Mochigoma(str::AbstractString; style=:sfen)
+function Mochigoma(str::AbstractString; style = :sfen)
     if style == :sfen
         mochigoma = Mochigoma()
         iter_res = iterate(str)
@@ -64,7 +68,7 @@ function Mochigoma(str::AbstractString; style=:sfen)
     end
 end
 
-function Base.string(mochigoma::Mochigoma; style=:sfen)
+function Base.string(mochigoma::Mochigoma; style = :sfen)
     if style == :sfen
         ret = ""
         for (i, n) in enumerate(mochigoma.komasuus)
@@ -106,7 +110,7 @@ end
 Return SFEN string.
 """
 function sfen(mochigoma::Mochigoma)
-    string(mochigoma; style=:sfen)
+    string(mochigoma; style = :sfen)
 end
 
 # function Base.AbstractVecOrTupleshow(io::IO, mochigoma::Mochigoma)

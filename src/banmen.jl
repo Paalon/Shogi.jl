@@ -3,11 +3,11 @@
 export Banmen
 
 import Base:
-    copy, iterate, size, getindex, setindex!, length, show, string
+    copy, ==, iterate, size, getindex, setindex!, length, show, string
 using StaticArrays
 
 mutable struct Banmen
-    matrix::MMatrix{9, 9, Int8, 81}
+    matrix::MMatrix{9,9,Int8,81}
 end
 
 function Banmen()
@@ -16,6 +16,10 @@ end
 
 function Base.copy(banmen::Banmen)
     Banmen(copy(banmen.matrix))
+end
+
+function Base.:(==)(a::Banmen, b::Banmen)
+    a.matrix == b.matrix
 end
 
 function Base.iterate(banmen::Banmen)
@@ -108,7 +112,7 @@ function sfen(banmen::Banmen)
     for i = 1:9
         for j = 1:9
             n = banmen.matrix[10-j, i]
-            ret *= string(Masu(n), style=:sfen)
+            ret *= string(Masu(n), style = :sfen)
         end
         if i != 9
             ret *= "/"

@@ -4,9 +4,9 @@ export Kyokumen, sfen, teban_mochigoma
 export SFENKyokumen
 
 import Base:
-    show, sign
+    copy, ==, show, sign
 
-"""
+    """
     Kyokumen
 
 A position state type of shogi game without history.
@@ -27,8 +27,25 @@ function Kyokumen()
             sente = Mochigoma(),
             gote = Mochigoma(),
         ),
-        sente
+        sente,
     )
+end
+
+function Base.copy(kyokumen::Kyokumen)
+    kyokumen = Kyokumen(
+        copy(kyokumen.banmen),
+        (
+            sente = copy(kyokumen.mochigoma.sente),
+            gote = copy(kyokumen.mochigoma.gote),
+        ),
+        kyokumen.teban,
+    )
+end
+
+function Base.:(==)(a::Kyokumen, b::Kyokumen)
+    a.banmen == b.banmen &&
+    a.mochigoma == b.mochigoma &&
+    a.teban == b.teban
 end
 
 function parse_mochigoma(str::AbstractString)
