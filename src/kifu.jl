@@ -1,16 +1,75 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export Kifu, sfen
+export add_node!, get_node, add_move!, has_node
 
 import Base:
     show, string
 
-using MetaGraphs
+using Graphs, MetaGraphs
 
 mutable struct Kifu
     graph::MetaDiGraph
     # positions::Vector{Kyokumen}
     # moves::Vector{AbstractMove}
+end
+
+function add_node!(kifu::Kifu, kyokumen::Kyokumen)
+    str = encode(kyokumen)
+    add_vertex!(kifu.graph, :hexadecimal, str)
+end
+
+function Kifu()
+    kifu = Kifu(MetaDiGraph())
+    kyokumen = Kyokumen()
+    add_node!(kifu, kyokumen)
+    kifu
+end
+
+function get_node(kifu::Kifu, kyokumen::Kyokumen)
+    vertices = filter_vertices(kifu.graph, :hexadecimal, encode(kyokumen))
+    only(vertices)
+end
+
+function has_node(kifu::Kifu, kyokumen::Kyokumen)
+    vertices = filter_vertices(kifu.graph, :hexadecimal, encode(kyokumen))
+    if isempty(vertices)
+        false
+    else
+        true
+    end
+end
+
+function add_move!(kifu::Kifu, kyokumen::Kyokumen, move::AbstractMove)
+    kyokumen_next = susumeru(kyokumen, move)
+    if has_node(kifu, kyokumen_next)
+        node0 = get_node(kifu, kyokumen)
+        node1 = get_node(kifu, kyokumen_next)
+        add_edge!(kifu.graph, node0, node1, :move, move)
+    else
+        add_node!(kifu, kyokumen_next)
+        node0 = get_node(kifu, kyokumen)
+        node1 = get_node(kifu, kyokumen_next)
+        add_edge!(kifu.graph, node0, node1, :move, move)
+    end
+    kifu
+end
+
+function sfen(kifu::Kifu)
+    hex = get_prop(kifu.graph, 1, :hexadecimal)
+    kyokumen = decode(hex)
+    sfenkyokumen = SFENKyokumen(kyokumen, 1)
+    str = "position sfen $(sfen(sfenkyokumen))"
+    edges_ = edges(kifu.graph)
+    if !isempty(edges_)
+        str *= " moves"
+        for edge in edges_
+            move = get_prop(kifu.graph, edge, :move)
+            str *= " "
+            str *= sfen(move)
+        end
+    end
+    str
 end
 
 # function startpos(kifu::Kifu)

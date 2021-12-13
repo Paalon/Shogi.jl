@@ -186,11 +186,11 @@ A kyokumen with tesuu.
 """
 mutable struct SFENKyokumen
     kyokumen::Kyokumen
-    tesuu::Tesuu
+    tesuu::Integer
 end
 
 function sfen(sfenkyokumen::SFENKyokumen)
-    "$(sfen(sfenkyokumen.kyokumen)) $(sfen(sfenkyokumen.tesuu))"
+    "$(sfen(sfenkyokumen.kyokumen)) $(sfenkyokumen.tesuu)"
 end
 
 function Base.string(sfenkyokumen::SFENKyokumen; style=:sfen)
@@ -208,6 +208,6 @@ end
 function SFENKyokumen(str::AbstractString)
     banmen_str, teban_str, mochigoma_str, tesuu_str = split(str, " ")
     kyokumen = Kyokumen(join((banmen_str, teban_str, mochigoma_str), " "))
-    tesuu = Tesuu(tesuu_str)
+    tesuu = parse(Int, tesuu_str)
     SFENKyokumen(kyokumen, tesuu)
 end
