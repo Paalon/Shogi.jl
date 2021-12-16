@@ -1,0 +1,62 @@
+= todo
+
+== USI 形式棋譜ファイル
+
+Universal Shogi Interface によって指定された `position` コマンドに
+Shogi Forsyth-Edwards Notation を使った
+
+例
+
+`[sfen <sfenstring> | startpos] moves <move1> ... <movei>`
+
+== 独自形式
+
+.jm
+
+☗７６歩
+☖８７歩
+☗
+
+R 
+馬 27 → 26
+角 88 → 11+
+龍 88 → 11-
+飛 99 *
+
+sengo,to_x,to_y,piece,ispromote_or_isdrop,from_x,from_y,capture,capture_piece
+
++76p 77
+-34p 33
++26p 27
+-84p 83
++25p 26
+-85p 84
++78g 69
+-32g 41
++24p 25
+-24p 23p
++24r 28p
+-86p 85
++86p 87p
+-86r 82p
++34r 24p
+-88b+22b
++88s 79b
+-28p@
++28s 39p
+-45b@
++24r 34
+-23p@
++77b@
+-88r+86s
++88b 77r
+-24p 23r
++11b+88l
+-87s@
++77B 11
+-76s-87p
++68B 77
+-.# resign
+.# mate
+# comment
+-res!

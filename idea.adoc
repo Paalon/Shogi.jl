@@ -1,0 +1,36 @@
+= Idea
+
+データベース
+
+目的：将棋の定跡・棋譜データベースを作成して整理したい。
+
+階層型
+ネットワーク型
+リレーショナル型
+
+
+RDBMS relational database management system
+NoSQL 
+
+== DataFrames
+
+特定の列を削除する。
+
+[source, julia]
+----
+select(df, Not(:column_name))
+----
+
+列を追加する。
+
+[source, julia]
+----
+insertcols!(df, :column_name => column)
+----
+
+表を結合する。
+
+[source, julia]
+----
+hcat(df1, df2)
+----

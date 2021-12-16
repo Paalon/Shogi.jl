@@ -1,10 +1,13 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export Banmen
+export swap_sengo, swap_sengo!
+export rot180!
+export BanmenHirate
 
-import Base:
-    copy, ==, iterate, size, getindex, setindex!, length, show, string
 using StaticArrays
+import Base:
+    copy, ==, iterate, size, getindex, setindex!, length, show, string, strides, rot180
 
 mutable struct Banmen
     matrix::MMatrix{9,9,Int8,81}
@@ -14,15 +17,15 @@ function Banmen()
     Banmen(MMatrix{9,9}(zeros(Int8, 9, 9)))
 end
 
-function Base.copy(banmen::Banmen)
+function copy(banmen::Banmen)
     Banmen(copy(banmen.matrix))
 end
 
-function Base.:(==)(a::Banmen, b::Banmen)
+function ==(a::Banmen, b::Banmen)
     a.matrix == b.matrix
 end
 
-function Base.iterate(banmen::Banmen)
+function iterate(banmen::Banmen)
     res = iterate(banmen.matrix)
     if !isnothing(res)
         f, i = res
@@ -32,7 +35,7 @@ function Base.iterate(banmen::Banmen)
     end
 end
 
-function Base.iterate(banmen::Banmen, state)
+function iterate(banmen::Banmen, state)
     res = iterate(banmen.matrix, state)
     if !isnothing(res)
         f, i = res
@@ -42,93 +45,60 @@ function Base.iterate(banmen::Banmen, state)
     end
 end
 
-function Base.size(banmen::Banmen)
+function size(banmen::Banmen)
     size(banmen.matrix)
 end
 
-function Base.getindex(banmen::Banmen, i::Integer)
-    Masu(banmen.matrix[i])
+function getindex(banmen::Banmen, i...)
+    Masu.(banmen.matrix[i...])
 end
 
-function Base.getindex(banmen::Banmen, i::Integer, j::Integer)
-    Masu(banmen.matrix[i, j])
+function setindex!(banmen::Banmen, masu, i...)
+    banmen.matrix[i...] = Integer.(masu)
 end
 
-function Base.setindex!(banmen::Banmen, masu::Masu, i::Integer)
-    banmen.matrix[i] = Integer(masu)
+function strides(banmen::Banmen)
+    strides(banmen.matrix)
 end
 
-function Base.setindex!(banmen::Banmen, masu::Masu, i::Integer, j::Integer)
-    banmen.matrix[i, j] = Integer(masu)
-end
-
-function Base.length(banmen::Banmen)
+function length(banmen::Banmen)
     length(banmen.matrix)
-end
-
-function Base.show(io::IO, banmen::Banmen)
-    print(io, " ９ ８ ７ ６ ５ ４ ３ ２ １\n")
-    for i = 1:9
-        for j = 1:9
-            masu = banmen[10-j, i]
-            print(io, string(masu; style = :original))
-        end
-        n = i |> string |> x -> x[1] |> hankaku_suuji_to_zenkaku_suuji |> string
-        print(io, " $n\n")
-    end
-end
-
-function Banmen(str::AbstractString)
-    banmen = Banmen()
-    iter_res = iterate(str)
-    i = 1
-    j = 1
-    while !isnothing(iter_res)
-        char, stat = iter_res
-        if isnumeric(char)
-            n = parse(Int8, char)
-            for _ = 1:n
-                banmen[10-j, i] = 空き枡
-                j += 1
-            end
-        elseif char == '/'
-            i += 1
-            j = 1
-        elseif char == '+'
-            char, stat = iterate(str, stat)
-            banmen[10-j, i] = Masu("+$char")
-            j += 1
-        else
-            banmen[10-j, i] = Masu(string(char))
-            j += 1
-        end
-        iter_res = iterate(str, stat)
-    end
-    banmen
-end
-
-function sfen(banmen::Banmen)
-    ret = ""
-    for i = 1:9
-        for j = 1:9
-            n = banmen.matrix[10-j, i]
-            ret *= string(Masu(n), style = :sfen)
-        end
-        if i != 9
-            ret *= "/"
-        end
-    end
-    ret = replace(ret, "111111111" => "9")
-    ret = replace(ret, "11111111" => "8")
-    ret = replace(ret, "1111111" => "7")
-    ret = replace(ret, "111111" => "6")
-    ret = replace(ret, "11111" => "5")
-    ret = replace(ret, "1111" => "4")
-    ret = replace(ret, "111" => "3")
-    ret = replace(ret, "11" => "2")
-    ret
 end
 
 function jishogi_score(banmen::Banmen)
     sum(jishogi_score.(banmen))
+end
+
+function swap_sengo(banmen::Banmen)
+    Banmen(-banmen.matrix)
+end
+
+function swap_sengo!(banmen::Banmen)
+    banmen.matrix = -banmen.matrix
+end
+
+function rot180(banmen::Banmen)
+    Banmen(rot180(banmen.matrix))
+end
+
+function rot180!(banmen::Banmen)
+    banmen.matrix = rot180(banmen.matrix)
+end
+
+const _BanmenHirate = let
+    banmen = Banmen()
+    banmen[:, 7] = Masu.(Integer(☗歩兵) * ones(Int8, 9))
+    banmen[:, 9] = [☗香車, ☗桂馬, ☗銀将, ☗金将, ☗玉将, ☗金将, ☗銀将, ☗桂馬, ☗香車]
+    banmen[[8, 2], 8] = [☗角行, ☗飛車]
+    banmen[:, 1:3] = swap_sengo(rot180(banmen))[:, 1:3]
+    banmen
+end
+
+"""
+    BanmenHirate
+
+Return the hirate initial banmen.
+"""
+function BanmenHirate()
+    copy(_BanmenHirate)
 end

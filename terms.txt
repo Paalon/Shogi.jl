@@ -1,0 +1,19 @@
+将棋,chess
+駒,piece
+玉将,king
+飛車,rook
+角行,bishop
+金将,gold
+銀将,silver
+桂馬,knight
+香車,lance
+歩兵,pawn
+段,rank
+筋,file
+打つ,drop
+成る,promote
+in hand pieces,持ち駒
+王手,check
+取る,capture
+手,ply
+２手,move

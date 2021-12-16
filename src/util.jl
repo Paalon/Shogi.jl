@@ -41,3 +41,18 @@ int8_to_hankaku_suuji(n::Int8) = dict_int8_to_hankaku_suuji[n]
 # Integer -- SFEN
 
 integer_to_sfen_suuji(n::Integer) = n |> string |> x -> x[1] |> hankaku_suuji_to_sfen_suuji |> string
+
+function export_instances(T)
+    :(export $(Symbol.(instances(T))...))
+end
+
+# Expr(:export, Symbol.(instances(T))...)
+# :(export $(Symbol.(instances(T))...))
+
+# macro export_(T)
+#     println(T)
+#     println(typeof(T))
+#     x = Symbol.(instances(:($T)))
+#     println(x)
+#     :(export $x)
+# end

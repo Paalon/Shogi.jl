@@ -2,6 +2,7 @@
 
 export AbstractMove, Move, Drop, sfen
 export susumeru!, susumeru
+export traditional_notation
 
 abstract type AbstractMove end
 
@@ -139,6 +140,14 @@ function AbstractMove(str::AbstractString)
     end
 end
 
+function Koma(::Kyokumen, drop::Drop)
+    drop.koma
+end
+
+function Koma(kyokumen::Kyokumen, move::Move)
+    Koma(kyokumen[from(move)...])
+end
+
 function susumeru!(kyokumen::Kyokumen, drop::Drop)
     mochigoma = teban_mochigoma(kyokumen)
     if mochigoma[drop.koma] ≥ 1 && isempty(kyokumen[to(drop)...])
@@ -170,15 +179,90 @@ function susumeru!(kyokumen::Kyokumen, move::Move)
     kyokumen
 end
 
-function susumeru(kyokumen::Kyokumen, move::AbstractMove)
+function susumeru!(kyokumen::Kyokumen, moves::AbstractMove...)
+    for move in moves
+        susumeru!(kyokumen, move)
+    end
+    kyokumen
+end
+
+function susumeru(kyokumen::Kyokumen, moves::AbstractMove...)
     kyokumen = copy(kyokumen)
-    susumeru!(kyokumen, move)
+    susumeru!(kyokumen, moves...)
+end
+
+function susumeru!(kyokumen::Kyokumen, moves::AbstractString...)
+    susumeru!(kyokumen, AbstractMove.(moves)...)
+end
+
+function susumeru(kyokumen::Kyokumen, moves::AbstractString...)
+    kyokumen = copy(kyokumen)
+    susumeru!(kyokumen, AbstractMove.(moves)...)
 end
 
 """
-    susumeru!(kyokumen::Kyokumen, move::AbstractMove)
-    susumeru(kyokumen::Kyokumen, move::AbstractMove)
+    susumeru!(kyokumen::Kyokumen, moves::AbstractMove...)
+    susumeru!(kyokumen::Kyokumen, moves::AbstractString...)
+    susumeru(kyokumen::Kyokumen, moves::AbstractMove...)
+    susumeru(kyokumen::Kyokumen, moves::AbstractString...)
 
-Do the movement to the kyokumen.
+Do the moves to the kyokumen.
 """
 susumeru!, susumeru
+
+function ispromotable(sengo::Sengo, from::Tuple{<:Integer,<:Integer}, to::Tuple{<:Integer,<:Integer})
+    if issente(sengo)
+        _, y0 = from
+        _, y1 = to
+        1 ≤ y0 ≤ 3 || 1 ≤ y1 ≤ 3
+    else
+        _, y0 = from
+        _, y1 = to
+        7 ≤ y0 ≤ 9 || 7 ≤ y1 ≤ 9
+    end
+end
+
+function ispromotable(kyokumen::Kyokumen, from::Tuple{<:Integer,<:Integer}, to::Tuple{<:Integer,<:Integer})
+    ispromotable(kyokumen.teban, from, to)
+end
+
+function ispromotable(kyokumen::Kyokumen, move::Move)
+    x = ispromotable(kyokumen[from(move)...])
+    if isnothing(x)
+        error("Invalid move $move")
+    elseif x && ispromotable(kyokumen, from(move), to(move))
+        true
+    else
+        false
+    end
+end
+
+# todo: add relative position and dousa.
+function traditional_notation(kyokumen::Kyokumen, move::AbstractMove)
+    ret = ""
+    if issente(kyokumen)
+        ret *= "☗"
+    else
+        ret *= "☖"
+    end
+    x, y = to(move)
+    ret *= x |> string |> only |> hankaku_suuji_to_zenkaku_suuji |> string
+    ret *= y |> string |> only |> hankaku_suuji_to_zenkaku_suuji |> string
+    hankaku_suuji_to_kansuuji
+    koma = Koma(kyokumen, move)
+    ret *= string(koma, style = :kifu)
+    if typeof(move) == Drop
+        # 
+        ret *= "打"
+    else
+        # typeof(move) == Move
+        if ispromotable(kyokumen, move)
+            if move.ispromote
+                ret *= "成"
+            else
+                ret *= "不成"
+            end
+        end
+    end
+    ret
+end
