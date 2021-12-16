@@ -1,5 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
+using Bijections
+
 """
     Reteurn dictionary swapped keys and values.
 """
@@ -13,23 +15,9 @@ const kansuujis = ['〇', '一', '二', '三', '四', '五', '六', '七', '八'
 const sfen_suujis = 'a':'i'
 const int8_0_to_9 = Int8(0):Int8(9)
 
-const dict_hankaku_suuji_to_zenkaku_suuji = Dict(hankaku_suujis .=> zenkaku_suujis)
-const dict_zenkaku_suuji_to_hankaku_suuji = Dict(zenkaku_suujis .=> hankaku_suujis)
-
-const dict_hankaku_suuji_to_kansuuji = Dict(hankaku_suujis .=> kansuujis)
-const dict_kansuuji_to_hankaku_suuji = Dict(kansuujis .=> hankaku_suujis)
-
-const dict_hankaku_suuji_to_sfen_suuji = Dict(hankaku_suujis[2:end] .=> sfen_suujis)
-const dict_sfen_suuji_to_hankaku_suuji = Dict(sfen_suujis .=> hankaku_suujis[2:end])
-
-hankaku_suuji_to_zenkaku_suuji(char::AbstractChar) = dict_hankaku_suuji_to_zenkaku_suuji[char]
-zenkaku_suuji_to_hankaku_suuji(char::AbstractChar) = dict_zenkaku_suuji_to_hankaku_suuji[char]
-
-hankaku_suuji_to_kansuuji(char::AbstractChar) = dict_hankaku_suuji_to_kansuuji[char]
-kansuuji_to_hankaku_suuji(char::AbstractChar) = dict_kansuuji_to_hankaku_suuji[char]
-
-hankaku_suuji_to_sfen_suuji(char::AbstractChar) = dict_hankaku_suuji_to_sfen_suuji[char]
-sfen_suuji_to_hankaku_suuji(char::AbstractChar) = dict_sfen_suuji_to_hankaku_suuji[char]
+const hankaku_suuji_to_zenkaku_suuji = Bijection(Dict(hankaku_suujis .=> zenkaku_suujis))
+const hankaku_suuji_to_kansuuji = Bijection(Dict(hankaku_suujis .=> kansuujis))
+const hankaku_suuji_to_sfen_suuji = Bijection(Dict(hankaku_suujis[2:end] .=> sfen_suujis))
 
 # Int8 ⇄ Char
 

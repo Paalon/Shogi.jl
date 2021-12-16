@@ -10,6 +10,7 @@ const sengo_to_original = Bijection(Dict(
     先手 => "+",
     後手 => "-",
 ))
+
 const koma_to_original = Bijection(Dict(
     歩兵 => "歩",
     香車 => "香",
@@ -26,9 +27,13 @@ const koma_to_original = Bijection(Dict(
     竜馬 => "馬",
     竜王 => "竜",
 ))
+
 string_original(sengo::Sengo) = sengo_to_original[sengo]
+
 string_original(koma::Koma) = koma_to_original[koma]
+
 string_original(masu::Masu) = masu_to_original[masu]
+
 function _masu_to_original(masu::Masu)
     if isempty(masu)
         " ・"
@@ -38,6 +43,7 @@ function _masu_to_original(masu::Masu)
         "$sengo$koma"
     end
 end
+
 const masu_to_original = let
     ret = Dict()
     for masu in instances(Masu)
@@ -46,14 +52,9 @@ const masu_to_original = let
     ret
 end |> Bijection
 
-
 Sengo(str::AbstractString) = sengo_to_original(str)
 Koma(str::AbstractString) = koma_to_original(str)
 Masu(str::AbstractString) = masu_to_original(str)
-
-function show(io::IO, mochigoma::Mochigoma)
-    print(io, "")
-end
 
 function string(mochigoma::Mochigoma)
     ret = ""
@@ -73,6 +74,10 @@ function string(mochigoma::Mochigoma)
         ret = "なし"
     end
     ret
+end
+
+function show(io::IO, mochigoma::Mochigoma)
+    print(io, "持ち駒: $mochigoma")
 end
 
 function show(io::IO, banmen::Banmen)

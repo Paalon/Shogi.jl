@@ -23,4 +23,4 @@ sfen(tesuu::Tesuu) = string(tesuu.n)
 
 next(tesuu::Tesuu) = Tesuu(tesuu.n + 1)
 
-Base.Integer(tesuu::Tesuu) = tesuu.n
+Integer(tesuu::Tesuu) = tesuu.n
