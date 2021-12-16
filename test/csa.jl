@@ -102,7 +102,8 @@
         @test BanmenFromCSA(BanmenHirateCSA) == BanmenHirate()
     end
     @testset "Kyokumen" begin
-
+        @test csa(KyokumenHirate()) == KyokumenHirateCSA
+        @test KyokumenFromCSA(KyokumenHirateCSA) == KyokumenHirate()
     end
     @testset "Move" begin
         kyokumen = NextKyokumenFromCSA(KyokumenHirate(), "+2726FU")

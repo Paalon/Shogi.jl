@@ -3,7 +3,7 @@
 export Mochigoma
 
 import Base:
-    copy, ==, getindex, setindex!, string, show
+    copy, ==, getindex, setindex!, string, show, isempty
 using StaticArrays
 
 """
@@ -36,6 +36,10 @@ end
 
 function setindex!(mochigoma::Mochigoma, n::Integer, koma::Koma)
     mochigoma.komasuus[mochigoma_index(koma)] = n
+end
+
+function isempty(mochigoma::Mochigoma)
+    mochigoma == Mochigoma()
 end
 
 function jishogi_score(mochigoma::Mochigoma)

@@ -149,6 +149,18 @@ function toru!(kyokumen::Kyokumen, x::Integer, y::Integer)
     kyokumen
 end
 
+function remaining_koma_omote(kyokumen::Kyokumen)
+    onboard = Mochigoma()
+    for i = 1:9, j = 1:9
+        koma = omote(Koma(kyokumen[i, j]))
+        if !isnothing(koma)
+            onboard[koma] += 1
+        end
+    end
+    x = [2, 2, 2, 4, 4, 4, 4, 18] - onboard.matrix - kyokumen.mochigoma.sente.matrix - kyokumen.mochigoma.gote.matrix
+    Mochigoma(x)
+end
+
 const bitboard_zeros = SMatrix{9,9,Bool}(zeros(Bool, 9, 9))
 
 function bitboard_mutable()
