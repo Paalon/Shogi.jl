@@ -95,4 +95,21 @@
         @test MasuFromCSA("-UM") == ☖竜馬
         @test MasuFromCSA("-RY") == ☖竜王
     end
+    @testset "Banmen" begin
+        @test csa(Banmen()) == BanmenEmptyCSA
+        @test csa(BanmenHirate()) == BanmenHirateCSA
+        @test BanmenFromCSA(BanmenEmptyCSA) == Banmen()
+        @test BanmenFromCSA(BanmenHirateCSA) == BanmenHirate()
+    end
+    @testset "Kyokumen" begin
+
+    end
+    @testset "Move" begin
+        kyokumen = NextKyokumenFromCSA(KyokumenHirate(), "+2726FU")
+        @test kyokumen[2, 7] == 〼
+        @test kyokumen[2, 6] == ☗歩兵
+        kyokumen = NextKyokumenFromCSA(KyokumenHirate(), "+7776FU")
+        @test kyokumen[7, 7] == 〼
+        @test kyokumen[7, 6] == ☗歩兵
+    end
 end

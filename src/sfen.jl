@@ -256,6 +256,25 @@ function KyokumenFromSFEN(str::AbstractString)
     Kyokumen(banmen, mochigoma, teban)
 end
 
+# function sfen(move::Move)
+#     from_x = move.from_x |> string
+#     from_y = move.from_y |> integer_to_sfen_suuji
+#     to_x = move.to_x |> string
+#     to_y = move.to_y |> integer_to_sfen_suuji
+#     result = "$from_x$from_y$to_x$to_y"
+#     if move.ispromote
+#         result *= "+"
+#     end
+#     result
+# end
+
+# function sfen(drop::Drop)
+#     koma = drop.koma |> sfen
+#     to_x = drop.to_x
+#     to_y = drop.to_y |> integer_to_sfen_suuji
+#     "$koma*$to_x$to_y"
+# end
+
 # function sfen(kifu::Kifu) end
 
 # function KifuFromSFEN(str::AbstractString) end

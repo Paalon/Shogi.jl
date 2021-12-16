@@ -4,7 +4,12 @@ export csa
 export SengoFromCSA
 export KomaFromCSA
 export MasuFromCSA
+export BanmenEmptyCSA, BanmenHirateCSA
+export BanmenFromCSA
+# export KyokumenFromCSA
 # export MoveFromCSA
+
+export NextKyokumenFromCSA
 
 using Bijections
 
@@ -67,6 +72,84 @@ end
 
 function MasuFromCSA(str::AbstractString)
     masu_to_csa(str)
+end
+
+const BanmenEmptyCSA = """
+P1 *  *  *  *  *  *  *  *  * 
+P2 *  *  *  *  *  *  *  *  * 
+P3 *  *  *  *  *  *  *  *  * 
+P4 *  *  *  *  *  *  *  *  * 
+P5 *  *  *  *  *  *  *  *  * 
+P6 *  *  *  *  *  *  *  *  * 
+P7 *  *  *  *  *  *  *  *  * 
+P8 *  *  *  *  *  *  *  *  * 
+P9 *  *  *  *  *  *  *  *  * 
+"""
+
+const BanmenHirateCSA = """
+P1-KY-KE-GI-KI-OU-KI-GI-KE-KY
+P2 * -HI *  *  *  *  * -KA * 
+P3-FU-FU-FU-FU-FU-FU-FU-FU-FU
+P4 *  *  *  *  *  *  *  *  * 
+P5 *  *  *  *  *  *  *  *  * 
+P6 *  *  *  *  *  *  *  *  * 
+P7+FU+FU+FU+FU+FU+FU+FU+FU+FU
+P8 * +KA *  *  *  *  * +HI * 
+P9+KY+KE+GI+KI+OU+KI+GI+KE+KY
+"""
+
+function csa(banmen::Banmen)
+    ret = ""
+    for j = 1:9
+        ret *= "P$j"
+        for i = 9:-1:1
+            ret *= csa(banmen[i, j])
+        end
+        ret *= "\n"
+    end
+    ret
+end
+
+function BanmenFromCSA(str::AbstractString)
+    banmen = Banmen()
+    lines = split(str, "\n")
+    for (i, line) in enumerate(lines[1:9])
+        line[1] == 'P' || error()
+        string(line[2]) == string(i) || error()
+        for j = 1:9
+            index = 3(j-1)+3:3(j-1)+5
+            banmen[10-j, i] = MasuFromCSA(line[index])
+        end
+    end
+    banmen
+end
+
+function NextKyokumenFromCSA(kyokumen::Kyokumen, str::AbstractString)
+    kyokumen = copy(kyokumen)
+    # check length
+    length(str) == 7 || error("Invalid length")
+    # check teban
+    teban = SengoFromCSA(string(str[1]))
+    kyokumen.teban == teban || error("Invalid teban")
+    # parse coordinate
+    from_x = parse(Int, str[2])
+    from_y = parse(Int, str[3])
+    to_x = parse(Int, str[4])
+    to_y = parse(Int, str[5])
+    to_koma = KomaFromCSA(str[6:7])
+    if from_x == 0 && from_y == 0
+        kyokumen[to_x, to_y] = Masu(to_koma, kyokumen.teban)
+        teban_mochigoma(kyokumen)[to_koma] -= 1
+    else
+        to_koma_prev = Koma(kyokumen[to_x, to_y])
+        if !isnothing(to_koma_prev)
+            teban_mochigoma(kyokumen)[omote(to_koma_prev)] += 1
+        end
+        kyokumen[from_x, from_y] = 〼
+        kyokumen[to_x, to_y] = to_koma
+    end
+    kyokumen.teban = next(kyokumen.teban)
+    kyokumen
 end
 
 # function parse_char_to_int(char::AbstractChar)
