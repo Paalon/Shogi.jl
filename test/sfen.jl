@@ -136,4 +136,8 @@
         str = "8l/1l+R2P3/p2pBG1pp/kps1p4/Nn1P2G2/P1P1P2PP/1PS6/1KSG3+r1/LN2+p3L w Sbgn3p"
         @test str |> KyokumenFromSFEN |> sfen == str
     end
+    @testset "next_from_sfen" begin
+        @test next_from_sfen(KyokumenHirate(), "2g2f") == KyokumenFromSFEN("lnsgkgsnl/1r5b1/ppppppppp/9/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL w -")
+        @test next_from_sfen(KyokumenHirate(), "7g7f") == KyokumenFromSFEN("lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w -")
+    end
 end

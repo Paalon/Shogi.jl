@@ -10,6 +10,8 @@ export SengoMochigomaFromSFEN
 export KyokumenFromSFEN
 # KifuFromSFEN
 
+export next_from_sfen, next_from_sfen!
+
 using Bijections
 
 const sengo_to_sfen = Bijection(Dict(
@@ -254,6 +256,49 @@ function KyokumenFromSFEN(str::AbstractString)
     mochigoma = SengoMochigomaFromSFEN(mochigoma_str)
     teban = SengoFromSFEN(teban_str)
     Kyokumen(banmen, mochigoma, teban)
+end
+
+function _check_in1to9(x::Integer)
+    1 ≤ x ≤ 9 || error("Must be 1 ≤ x ≤ 9.")
+end
+
+function next_from_sfen!(kyokumen::Kyokumen, str::AbstractString)
+    4 ≤ length(str) ≤ 5 || error("Invalid length.")
+    if str[2] == '*'
+        length(str) == 4 || error("Invalid length.")
+        koma = KomaFromSFEN(string(str[1]))
+        teban_mochigoma(kyokumen)[koma] ≥ 1 || error("There is no mochigoma $koma.")
+        to_x = hankaku_suuji_to_int8(str[3])
+        to_y = hankaku_suuji_to_int8(hankaku_suuji_to_sfen_suuji(str[4]))
+        _check_in1to9(to_x)
+        _check_in1to9(to_y)
+        teban_mochigoma(kyokumen)[koma] -= 1
+        kyokumen[to_x, to_y] = Masu(koma, kyokumen.teban)
+        kyokumen.teban = next(kyokumen.teban)
+    else
+        from_x = hankaku_suuji_to_int8(str[1])
+        from_y = hankaku_suuji_to_int8(hankaku_suuji_to_sfen_suuji(str[2]))
+        to_x = hankaku_suuji_to_int8(str[3])
+        to_y = hankaku_suuji_to_int8(hankaku_suuji_to_sfen_suuji(str[4]))
+        _check_in1to9(from_x)
+        _check_in1to9(from_y)
+        _check_in1to9(to_x)
+        _check_in1to9(to_y)
+        if length(str) == 5 && str[5] == '+'
+            kyokumen[to_x, to_y] = naru(kyokumen[from_x, from_y])
+            kyokumen[from_x, from_y] = 〼
+        else
+            kyokumen[to_x, to_y] = kyokumen[from_x, from_y]
+            kyokumen[from_x, from_y] = 〼
+        end
+    end
+    kyokumen.teban = next(kyokumen.teban)
+    kyokumen
+end
+
+function next_from_sfen(kyokumen::Kyokumen, str::AbstractString)
+    kyokumen = copy(kyokumen)
+    next_from_sfen!(kyokumen, str)
 end
 
 # function sfen(move::Move)

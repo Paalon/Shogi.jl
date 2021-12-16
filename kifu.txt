@@ -28,3 +28,4 @@ position sfen ln1g1gsnl/1r1s1k3/pppppp1pp/6p2/2P2b3/9/PP1PPPPPP/1R3K3/LNSG1GSNL 
 position sfen ln1g1gsnl/1r1s1k3/pppppp1pp/6p2/2P2b3/9/PP1PPPPPP/1R3K3/LNSG1GSNL b B 11 moves 6i5h
 # 先手右四間飛車
 position startpos moves 7g7f 3c3d 3i4h 8c8d
+# position sfen lnsgkgsnl/1r5b1/p1pppp1pp/6pP1/1p7/2P6/PP1PPPP1P/1B5R1/LNSGKGSNL w - 8

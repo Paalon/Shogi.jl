@@ -106,10 +106,10 @@
         @test KyokumenFromCSA(KyokumenHirateCSA) == KyokumenHirate()
     end
     @testset "Move" begin
-        kyokumen = NextKyokumenFromCSA(KyokumenHirate(), "+2726FU")
+        kyokumen = next_from_csa(KyokumenHirate(), "+2726FU")
         @test kyokumen[2, 7] == 〼
         @test kyokumen[2, 6] == ☗歩兵
-        kyokumen = NextKyokumenFromCSA(KyokumenHirate(), "+7776FU")
+        kyokumen = next_from_csa(KyokumenHirate(), "+7776FU")
         @test kyokumen[7, 7] == 〼
         @test kyokumen[7, 6] == ☗歩兵
     end

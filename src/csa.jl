@@ -10,7 +10,7 @@ export KyokumenHirateCSA
 export KyokumenFromCSA
 # export MoveFromCSA
 
-export NextKyokumenFromCSA
+export next_from_csa, next_from_csa!
 
 using Bijections
 
@@ -223,8 +223,7 @@ function KyokumenFromCSA(str::AbstractString)
     kyokumen
 end
 
-function NextKyokumenFromCSA(kyokumen::Kyokumen, str::AbstractString)
-    kyokumen = copy(kyokumen)
+function next_from_csa!(kyokumen::Kyokumen, str::AbstractString)
     # check length
     length(str) == 7 || error("Invalid length")
     # check teban
@@ -249,6 +248,11 @@ function NextKyokumenFromCSA(kyokumen::Kyokumen, str::AbstractString)
     end
     kyokumen.teban = next(kyokumen.teban)
     kyokumen
+end
+
+function next_from_csa(kyokumen::Kyokumen, str::AbstractString)
+    kyokumen = copy(kyokumen)
+    next_from_csa!(kyokumen, str)
 end
 
 # function parse_char_to_int(char::AbstractChar)
