@@ -2,6 +2,7 @@
 
 export SengoMochigoma
 export Kyokumen, sfen, teban_mochigoma, toru!, teban_pieces
+export getmochigoma
 export SFENKyokumen, SFENKyokumenFromSFEN
 export KyokumenHirate
 
@@ -87,6 +88,14 @@ function teban_mochigoma(kyokumen::Kyokumen)
     end
 end
 
+function getmochigoma(kyokumen::Kyokumen, teban::Sengo)
+    if issente(teban)
+        kyokumen.mochigoma.sente
+    else
+        kyokumen.mochigoma.gote
+    end
+end
+
 function rot180(kyokumen::Kyokumen)
     Kyokumen(
         rot180(kyokumen.banmen),
@@ -160,6 +169,14 @@ function remaining_koma_omote(kyokumen::Kyokumen)
     x = [2, 2, 2, 4, 4, 4, 4, 18] - onboard.matrix - kyokumen.mochigoma.sente.matrix - kyokumen.mochigoma.gote.matrix
     Mochigoma(x)
 end
+
+# function distance(a::Kyokumen, b::Kyokumen)
+#     x = a.banmen.matrix - b.banmen.matrix
+#     d_kyokumen = sum(x .≠ 0)
+#     d_mochigoma = sum(abs.(a.mochigoma.sengo.komasuus - b.mochigoma.sengo.komasuus))
+#     d_sengo = a.teban ≠ b.teban
+#     d_kyokumen + d_mochigoma + d_sengo
+# end
 
 const bitboard_zeros = SMatrix{9,9,Bool}(zeros(Bool, 9, 9))
 

@@ -12,6 +12,8 @@ include("kyokumen.jl")
 
 include("io.jl")
 
+include("coding.jl")
+
 # SFEN for test
 
 # const kyokumen_sfen_strings = [
@@ -22,15 +24,14 @@ include("io.jl")
 #     "8l/1l+R2P3/p2pBG1pp/kps1p4/Nn1P2G2/P1P1P2PP/1PS6/1KSG3+r1/LN2+p3L w Sbgn3p 2"
 # ]
 
-
-
 # include("sfenkyokumen.jl")
 # include("move.jl")
-# include("coding.jl")
+
 # include("graph.jl")
 
 include("sfen.jl")
 include("csa.jl")
+include("kakinoki.jl")
 
 # Kifu
 # @test sfen(Kifu()) == "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"

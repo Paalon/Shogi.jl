@@ -10,8 +10,6 @@ using Graphs, MetaGraphs
 
 mutable struct Kifu
     graph::MetaDiGraph
-    # positions::Vector{Kyokumen}
-    # moves::Vector{AbstractMove}
 end
 
 function add_node!(kifu::Kifu, kyokumen::Kyokumen)

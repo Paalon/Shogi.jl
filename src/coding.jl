@@ -10,15 +10,15 @@ export encode, decode
 import Base:
     bitstring
 
-function Base.bitstring(sengo::Sengo)
+function bitstring(sengo::Sengo)
     ifelse(issente(sengo), "1", "0")
 end
 
 function decode_sengo(str::AbstractString)
     if str == "1"
-        sente
+        先手
     elseif str == "0"
-        gote
+        後手
     else
         error("Invalid code: $str")
     end
@@ -29,9 +29,9 @@ function decode_sengo(str::AbstractString, state)
     if !isnothing(valstate)
         char, state = valstate
         if char == '1'
-            sente, state
+            先手, state
         else
-            gote, state
+            後手, state
         end
     else
         nothing
@@ -52,9 +52,10 @@ const koma_code = Dict(
     竜馬 => "101111",
     飛車 => "011111",
     竜王 => "111111",
+    玉将 => "",
 )
 
-function Base.bitstring(koma::Koma)
+function bitstring(koma::Koma)
     koma_code[koma]
 end
 
@@ -138,7 +139,7 @@ end
 
 const masu_code = let
     ret = Dict{Masu,String}()
-    for masu in list_masu
+    for masu in instances(Masu)
         emptiness = isempty(masu)
         existence, sengo, koma = "", "", ""
         if isempty(masu)
@@ -154,14 +155,14 @@ const masu_code = let
     ret
 end
 
-function Base.bitstring(masu::Masu)
+function bitstring(masu::Masu)
     masu_code[masu]
 end
 
 function decode_masu(str::AbstractString, state)
     char, state = iterate(str, state)
     masu = if char == '0'
-        空き枡
+        〼
     else
         sengo, state = decode_sengo(str, state)
         koma, state = decode_koma(str, state)
@@ -170,7 +171,7 @@ function decode_masu(str::AbstractString, state)
     masu, state
 end
 
-function Base.bitstring(banmen::Banmen)
+function bitstring(banmen::Banmen)
     sentekp = UInt8(81)
     gotekp = UInt8(81)
     code = ""
@@ -189,7 +190,7 @@ function Base.bitstring(banmen::Banmen)
     code
 end
 
-function Base.bitstring(mochigoma::@NamedTuple {sente::Mochigoma, gote::Mochigoma})
+function bitstring(mochigoma::SengoMochigoma)
     code = ""
     for (i, n) in enumerate(mochigoma.sente.komasuus)
         koma = KomaFromMochigomaIndex(i)
@@ -206,12 +207,11 @@ function Base.bitstring(mochigoma::@NamedTuple {sente::Mochigoma, gote::Mochigom
     code
 end
 
-function Base.bitstring(kyokumen::Kyokumen)
+function bitstring(kyokumen::Kyokumen)
     code_banmen = bitstring(kyokumen.banmen)
     code_mochigoma = bitstring(kyokumen.mochigoma)
     code_teban = bitstring(kyokumen.teban)
-    code = "$code_mochigoma$code_banmen$code_teban"
-    code
+    "$code_mochigoma$code_banmen$code_teban"
 end
 
 """

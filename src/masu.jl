@@ -1,7 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export Masu, Koma, jishogi_score, ispromotable, naru
-export isempty, issente, isgote
+export isempty, isomote, issente, isgote
 
 import Base:
     isempty, sign
@@ -53,6 +53,14 @@ function isempty(masu::Masu)
     masu == 〼
 end
 
+function isomote(masu::Masu)
+    if isempty(masu)
+        false
+    else
+        Integer(masu) % 2 == 0
+    end
+end
+
 function Sengo(masu::Masu)
     if issente(masu)
         先手
@@ -96,12 +104,6 @@ end
 function string_original(masu::Masu)
     masu_to_original[masu]
 end
-
-# function isomote(masu::Masu)
-#     if !isempty(masu)
-#         Integer(masu) % 2 == 0
-#     end
-# end
 
 # function jishogi_score(masu::Masu)
 #     if Integer(masu) == 0

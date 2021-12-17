@@ -45,3 +45,7 @@ end
 function jishogi_score(mochigoma::Mochigoma)
     sum(mochigoma.komasuus .* [0, 5, 5, 1, 1, 1, 1, 1])
 end
+
+function distance(m0::Mochigoma, m1::Mochigoma)
+    sum(abs.(m1.komasuus - m0.komasuus))
+end

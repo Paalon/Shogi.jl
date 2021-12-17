@@ -102,3 +102,8 @@ Return the hirate initial banmen.
 function BanmenHirate()
     copy(_BanmenHirate)
 end
+
+function bitdiff(b0::Banmen, b1::Banmen)
+    x = b1.matrix - b0.matrix
+    x .= 0
+end
