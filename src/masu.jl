@@ -83,7 +83,7 @@ function Koma(masu::Masu)
 end
 
 Masu(koma::Koma, sengo::Sengo) = Masu(sign(sengo) * Integer(koma))
-Masu(sengo::Sengo, Koma::Koma) = Masu(sign(sengo) * Integer(koma))
+Masu(sengo::Sengo, koma::Koma) = Masu(sign(sengo) * Integer(koma))
 
 function ispromotable(masu::Masu)
     koma = Koma(masu)

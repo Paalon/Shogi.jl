@@ -1,53 +1,48 @@
 # Copyright 2021-12-14 Koki Fushimi
 
-# export MoveFromCSA
-
-export next_from_csa, next_from_csa!
-
-using Bijections
-
 include("sengo.jl")
 include("koma.jl")
 include("masu.jl")
 include("banmen.jl")
 include("kyokumen.jl")
+include("move.jl")
 
-function next_from_csa!(kyokumen::Kyokumen, str::AbstractString)
-    # check length
-    length(str) == 7 || error("Invalid length")
-    # check teban
-    teban = SengoFromCSA(string(str[1]))
-    kyokumen.teban == teban || error("Invalid teban")
-    # parse coordinate
-    from_x = parse(Int, str[2])
-    from_y = parse(Int, str[3])
-    to_x = parse(Int, str[4])
-    to_y = parse(Int, str[5])
-    to_koma = KomaFromCSA(str[6:7])
-    if from_x == 0 && from_y == 0
-        kyokumen[to_x, to_y] = Masu(to_koma, kyokumen.teban)
-        teban_mochigoma(kyokumen)[to_koma] -= 1
-    else
-        to_koma_prev = Koma(kyokumen[to_x, to_y])
-        if !isnothing(to_koma_prev)
-            teban_mochigoma(kyokumen)[omote(to_koma_prev)] += 1
-        end
-        kyokumen[from_x, from_y] = 〼
-        kyokumen[to_x, to_y] = to_koma
-    end
-    kyokumen.teban = next(kyokumen.teban)
-    kyokumen
-end
+# function next_from_csa!(kyokumen::Kyokumen, str::AbstractString)
+#     # check length
+#     length(str) == 7 || error("Invalid length")
+#     # check teban
+#     teban = SengoFromCSA(string(str[1]))
+#     kyokumen.teban == teban || error("Invalid teban")
+#     # parse coordinate
+#     from_x = parse(Int, str[2])
+#     from_y = parse(Int, str[3])
+#     to_x = parse(Int, str[4])
+#     to_y = parse(Int, str[5])
+#     to_koma = KomaFromCSA(str[6:7])
+#     if from_x == 0 && from_y == 0
+#         kyokumen[to_x, to_y] = Masu(to_koma, kyokumen.teban)
+#         teban_mochigoma(kyokumen)[to_koma] -= 1
+#     else
+#         to_koma_prev = Koma(kyokumen[to_x, to_y])
+#         if !isnothing(to_koma_prev)
+#             teban_mochigoma(kyokumen)[omote(to_koma_prev)] += 1
+#         end
+#         kyokumen[from_x, from_y] = 〼
+#         kyokumen[to_x, to_y] = to_koma
+#     end
+#     kyokumen.teban = next(kyokumen.teban)
+#     kyokumen
+# end
 
-"""
-    next_from_csa(kyokumen::Kyokumen, str::AbstractString)
+# """
+#     next_from_csa(kyokumen::Kyokumen, str::AbstractString)
 
-Construct the next kyokumen from current kyokumen `kyokumen` and CSA move string `str`.
-"""
-function next_from_csa(kyokumen::Kyokumen, str::AbstractString)
-    kyokumen = copy(kyokumen)
-    next_from_csa!(kyokumen, str)
-end
+# Construct the next kyokumen from current kyokumen `kyokumen` and CSA move string `str`.
+# """
+# function next_from_csa(kyokumen::Kyokumen, str::AbstractString)
+#     kyokumen = copy(kyokumen)
+#     next_from_csa!(kyokumen, str)
+# end
 
 # function parse_char_to_int(char::AbstractChar)
 #     parse(Int, string(char))
