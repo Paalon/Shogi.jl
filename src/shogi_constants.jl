@@ -1,6 +1,5 @@
-
-
 # SFEN Koma Omote ⇄ Int8
+
 const dict_sfen_koma_omote_to_int8 = Dict(
     "K" => Int8(1),
     "R" => Int8(2),

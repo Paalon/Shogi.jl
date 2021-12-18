@@ -1,7 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export Koma
-export iskogoma, isoogoma
+export iskogoma, isoogoma, isgoldlike
 export ispromotable, naru, omote, jishogi_score
 
 using Bijections
@@ -28,6 +28,27 @@ eval(export_instances(Koma))
 
 isoogoma(koma::Koma) = 4 ≤ Integer(koma) ≤ 7
 iskogoma(koma::Koma) = 8 ≤ Integer(koma) ≤ 17
+
+const _isgoldlike = Dict(
+    玉将 => false,
+    飛車 => false,
+    竜王 => false,
+    角行 => false,
+    竜馬 => false,
+    金将 => true,
+    銀将 => false,
+    成銀 => true,
+    桂馬 => false,
+    成桂 => true,
+    香車 => false,
+    成香 => true,
+    歩兵 => false,
+    と金 => true,
+)
+
+function isgoldlike(koma::Koma)
+    _isgoldlike[koma]
+end
 
 # isomote(koma::Koma) = Integer(koma) % 2 == 0
 # isura(koma::Koma) = !isomote(koma)

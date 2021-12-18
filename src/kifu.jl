@@ -1,7 +1,8 @@
 # Copyright 2021-11-25 Koki Fushimi
 
-export Kifu, KifuFromSFEN, sfen
-export add_node!, get_node, add_move!, has_node, get_end
+export Kifu
+export hasnode, getnode, addnode!
+export add_move!, get_end
 
 import Base:
     show, string
@@ -12,19 +13,53 @@ mutable struct Kifu
     graph::MetaDiGraph
 end
 
-function add_node!(kifu::Kifu, kyokumen::Kyokumen)
-    str = encode(kyokumen)
-    add_vertex!(kifu.graph, :hexadecimal, str)
+function hasnode(kifu::Kifu, kyokumen::Kyokumen)
+    nodes = filter_vertices(kifu.graph, :hexadecimal, encode(kyokumen))
+    if isempty(nodes)
+        false
+    else
+        true
+    end
 end
 
-function Kifu(kyokumen::Kyokumen)
-    kifu = Kifu(MetaDiGraph())
-    add_node!(kifu, kyokumen)
-    kifu
+"""
+    get_node(kifu::Kifu, kyokumen::Kyokumen)
+
+Get the node of `kyokumen` from `kifu`.
+"""
+function getnode(kifu::Kifu, kyokumen::Kyokumen)
+    nodes = filter_vertices(kifu.graph, :hexadecimal, encode(kyokumen))
+    only(nodes)
+end
+
+"""
+    add_node(kifu::Kifu, kyokumen::Kyokumen)
+
+Add the node of `kyokumen` to `kifu`.
+"""
+function add_node!(kifu::Kifu, kyokumen::Kyokumen)
+    hexadecimal = encode(kyokumen)
+    add_vertex!(kifu.graph, :hexadecimal, hexadecimal)
+end
+
+function getedge(kifu::Kifu, kyokumen::Kyokumen)
+    h
+end
+
+function addedge!(kifu::Kifu, k0::Kyokumen, k1::Kyokumen, move)
+    n0 = getnode(kifu, k0)
+    n1 = getnode(kifu, k1)
+    add_edge!(kifu.graph, n0, n1, :move, move)
 end
 
 function Kifu()
-    Kifu(Kyokumen())
+    Kifu(MetaDiGraph())
+end
+
+function Kifu(kyokumen::Kyokumen)
+    kifu = Kifu()
+    add_node!(kifu, kyokumen)
+    kifu
 end
 
 function get_end(kifu::Kifu)
@@ -32,28 +67,14 @@ function get_end(kifu::Kifu)
     decode(str)
 end
 
-function get_node(kifu::Kifu, kyokumen::Kyokumen)
-    vertices = filter_vertices(kifu.graph, :hexadecimal, encode(kyokumen))
-    only(vertices)
-end
-
-function has_node(kifu::Kifu, kyokumen::Kyokumen)
-    vertices = filter_vertices(kifu.graph, :hexadecimal, encode(kyokumen))
-    if isempty(vertices)
-        false
-    else
-        true
-    end
-end
-
-function add_move!(kifu::Kifu, kyokumen::Kyokumen, move::AbstractMove)
-    kyokumen_next = susumeru(kyokumen, move)
-    if has_node(kifu, kyokumen_next)
-        node0 = get_node(kifu, kyokumen)
-        node1 = get_node(kifu, kyokumen_next)
+function addmove_sfen!(kifu::Kifu, kyokumen::Kyokumen, str::AbstractString)
+    kyokumen_next = next_from_sfen(kyokumen, str)
+    if hasnode(kifu, kyokumen_next)
+        node0 = getnode(kifu, kyokumen)
+        node1 = getnode(kifu, kyokumen_next)
         add_edge!(kifu.graph, node0, node1, :move, move)
     else
-        add_node!(kifu, kyokumen_next)
+        addnode!(kifu, kyokumen_next)
         node0 = get_node(kifu, kyokumen)
         node1 = get_node(kifu, kyokumen_next)
         add_edge!(kifu.graph, node0, node1, :move, move)

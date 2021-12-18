@@ -4,7 +4,6 @@ module Shogi
 
 include("util.jl")
 include("sengo.jl")
-# include("tesuu.jl")
 include("koma.jl")
 include("masu.jl")
 include("mochigoma.jl")
@@ -12,16 +11,17 @@ include("sengomochigoma.jl")
 include("banmen.jl")
 include("kyokumen.jl")
 include("coding.jl")
-# include("move.jl")
+# include("jsamotion.jl")
+include("move.jl")
 
+include("attack.jl")
 # include("kifu.jl")
+# include("book.jl")
 
 include("io.jl")
 
-include("sfen.jl")
-include("csa.jl")
+include("sfen/sfen.jl")
+include("csa/csa.jl")
 include("kakinoki.jl")
-
-# include("book.jl")
 
 end

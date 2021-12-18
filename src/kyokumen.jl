@@ -2,7 +2,8 @@
 
 export SengoMochigoma
 export Kyokumen, sfen, teban_mochigoma, toru!, teban_pieces
-export getmochigoma
+export Sengo
+export gettebanmochigoma
 export SFENKyokumen, SFENKyokumenFromSFEN
 export KyokumenHirate
 
@@ -80,6 +81,10 @@ function issente(kyokumen::Kyokumen)
     issente(kyokumen.teban)
 end
 
+function Sengo(kyokumen::Kyokumen)
+    kyokumen.teban
+end
+
 function teban_mochigoma(kyokumen::Kyokumen)
     if issente(kyokumen)
         kyokumen.mochigoma.sente
@@ -88,7 +93,7 @@ function teban_mochigoma(kyokumen::Kyokumen)
     end
 end
 
-function getmochigoma(kyokumen::Kyokumen, teban::Sengo)
+function gettebanmochigoma(kyokumen::Kyokumen, teban::Sengo)
     if issente(teban)
         kyokumen.mochigoma.sente
     else

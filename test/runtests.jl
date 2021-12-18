@@ -2,6 +2,7 @@ using Test
 
 using Shogi
 
+include("util.jl")
 include("sengo.jl")
 include("koma.jl")
 include("masu.jl")
@@ -13,6 +14,8 @@ include("kyokumen.jl")
 include("io.jl")
 
 include("coding.jl")
+
+include("attack.jl")
 
 # SFEN for test
 
