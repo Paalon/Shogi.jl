@@ -1,6 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export Koma
+# @defer @exportinstances Koma
 export iskogoma, isoogoma, isgoldlike
 export ispromotable, naru, omote, jishogi_score
 
@@ -24,7 +25,7 @@ using Bijections
     と金 = 17
 end
 
-eval(export_instances(Koma))
+@exportinstances Koma
 
 isoogoma(koma::Koma) = 4 ≤ Integer(koma) ≤ 7
 iskogoma(koma::Koma) = 8 ≤ Integer(koma) ≤ 17

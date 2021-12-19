@@ -1,7 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export Sengo
-export 先手, 後手
+# @defer @exportinstances Sengo
 export issente, next
 
 import Base.sign
@@ -12,6 +12,8 @@ import Base.sign
 先後を表す型。
 """
 @enum Sengo::Bool 先手 = 1 後手 = 0
+
+@exportinstances Sengo
 
 """
     issente(sengo::Sengo)

@@ -1,6 +1,8 @@
 # Copyright 2021-11-25 Koki Fushimi
 
-export Masu, Koma, jishogi_score, ispromotable, naru
+export Masu
+# @defer @exportinstances Masu
+export jishogi_score, ispromotable, naru
 export isempty, isomote, issente, isgote
 
 import Base:
@@ -39,7 +41,7 @@ using Bijections
     ☖と金 = -17
 end
 
-eval(export_instances(Masu))
+@exportinstances Masu
 
 function issente(masu::Masu)
     Integer(masu) > 0
