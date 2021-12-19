@@ -4,30 +4,129 @@ export AbstractMove
 export KifuMove
 export KyokumenMove
 export CompleteMove
+export EncodedMove
+export gettail, gethead, getname
+export gettaildecoded, getheaddecoded
 
 abstract type AbstractMove end
+
+"""
+    KifuMove <: AbstractMove
+
+tail 局面までの棋譜を与えると head 局面を記述できる指し手の表現を表す型。
+「同角」などの表現はこれに当たる。
+"""
 abstract type KifuMove <: AbstractMove end
+
+"""
+    KyokumenMove <: KifuMove
+
+tail 局面を与えると head 局面を記述できる指し手の表現を表す型。
+"""
 abstract type KyokumenMove <: KifuMove end
+
+"""
+    CompleteMove <: KyokumenMove
+
+tail 局面と head 局面の情報を持つ指し手の表現を表す型。
+"""
 abstract type CompleteMove <: KyokumenMove end
 
+"""
+    EncodedKyokumen <: CompleteMove
+
+圧縮された局面の型。
+"""
 struct EncodedMove <: CompleteMove
-    src1::UInt128
-    src2::UInt128
-    dst1::UInt128
-    dst2::UInt128
+    tail1::UInt128
+    tail2::UInt128
+    head1::UInt128
+    head2::UInt128
 end
 
-# function getsrc(move::CompleteMove)
-#     move.src
-# end
+function EncodedMove(ek0::EncodedKyokumen, ek1::EncodedKyokumen)
+    EncodedMove(ek0.n1, ek0.n2, ek1.n1, ek1.n2)
+end
 
-# function getdst(move::CompleteMove)
-#     move.dst
-# end
+function EncodedMove(k0::Kyokumen, k1::Kyokumen)
+    ek0 = EncodedKyokumen(k0)
+    ek1 = EncodedKyokumen(k1)
+    EncodedMove(ek0, ek1)
+end
 
-# function getname(move::CompleteMove)
-#     move.name
-# end
+function next(ek::EncodedKyokumen, move::KyokumenMove)
+    kyokumen = Kyokumen(ek)
+    next!(kyokumen, move)
+    EncodedKyokumen(kyokumen)
+end
+
+function EncodedMove(ek0::EncodedKyokumen, move::KyokumenMove)
+    ek1 = next(ek0, move)
+    EncodedMove(ek0, ek1)
+end
+
+function EncodedMove(k0::Kyokumen, move::KyokumenMove)
+    EncodedMove(EncodedKyokumen(k0), move)
+end
+
+function gettail(move::EncodedMove)
+    EncodedKyokumen(move.tail1, move.tail2)
+end
+
+function gethead(move::EncodedMove)
+    EncodedKyokumen(move.head1, move.head2)
+end
+
+function gettaildecoded(move::EncodedMove)
+    s1 = bitstring(move.tail1)
+    s2 = bitstring(move.tail2)
+    decode("$s1$s2", base = 2)
+end
+
+function getheaddecoded(move::EncodedMove)
+    s1 = bitstring(move.head1)
+    s2 = bitstring(move.head2)
+    decode("$s1$s2", base = 2)
+end
+
+function getname(ek::EncodedMove)
+    k0 = gettaildecoded(ek)
+    k1 = getheaddecoded(ek)
+    sengo = Sengo(k0)
+    sengo_str = string_gui(sengo)
+    bba0 = getally(k0)
+    bba1 = getenemy(k1)
+    xbba = xor.(bba0, bba1)
+    n = sum(xbba)
+    if n == 1
+        # drop
+        dst = Tuple(findfirst(identity, xbba))
+        dst_str = string_gui(dst)
+        koma = Koma(k1[dst...])
+        koma_str = string_gui(koma)
+        suf_str = "打"
+        "$sengo_str$dst_str$koma_str$suf_str"
+    elseif n == 2
+        # on board move
+        src = Tuple(findfirst(identity, bba0 .& xbba))
+        dst = Tuple(findfirst(identity, bba1 .& xbba))
+        src_str = string_gui(src)
+        dst_str = string_gui(dst)
+        koma_src = Koma(k0[src...])
+        koma_dst = Koma(k1[dst...])
+        koma_str = string_gui(koma_src)
+        if koma_src == koma_dst
+            "$sengo_str$dst_str$koma_str$src_str"
+        elseif naru(koma_src) == koma_dst
+            suf = "成"
+            "$sengo_str$dst_str$koma_str$suf$src_str"
+        else
+            error()
+        end
+    else
+        error()
+    end
+end
 
 # function ispromotable(move::CompleteMove)
 #     move.ispromotable
@@ -86,8 +185,6 @@ end
 
 # function basicmoves(kyokumen::Kyokumen)
 #     ret = Dict[]
-#     bb_koma = zeros(Bool, 9, 9)
-#     bb_teban_koma = zeros(Bool, 9, 9)
 #     for i = 1:9, j = 1:9
 #         bb_koma[i, j] = kyokumen[i, j] ≠ 〼
 #         bb_teban_koma[i, j] = Sengo(kyokumen) == Sengo(kyokumen[i, j])

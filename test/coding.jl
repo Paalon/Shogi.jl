@@ -1,4 +1,10 @@
 @testset "coding" begin
+    @testset "bitstring(::Sengo)" begin
+        @test bitstring(先手) == "1"
+        @test bitstring(後手) == "0"
+        @test SengoFromBitString("1") == 先手
+        @test SengoFromBitString("0") == 後手
+    end
     @testset "bitstring(::Koma)" begin
         @test bitstring(歩兵) == "00"
         @test bitstring(と金) == "10"
@@ -46,9 +52,14 @@
         @test bitstring(☖竜王) == "11111101"
         @test bitstring(☖玉将) == ""
     end
+    # SFEN dependent
     @testset "bitstring(::Kyokumen)" begin
         # @test bitstring(KyokumenHirate())
         # @show encode(Kyokumen(), base=2)
+        kyokumen = KyokumenFromSFEN("8l/1l+R2P3/p2pBG1pp/kps1p4/Nn1P2G2/P1P1P2PP/1PS6/1KSG3+r1/LN2+p3L w Sbgn3p")
+        str2 = bitstring(kyokumen)
+        kyokumen1 = KyokumenFromBitString(str2)
+        @test kyokumen == kyokumen1
     end
 
     isvalid_kyokumen_coding_length(str::AbstractString) = Kyokumen(str) |> bitstring |> length == 256

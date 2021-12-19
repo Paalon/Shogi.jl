@@ -1,4 +1,4 @@
-export SFENMove
+export SFENMove, SFENMoves
 export next!, next
 
 import Base.string
@@ -114,4 +114,8 @@ end
 function next(kyokumen::Kyokumen, move::SFENMove)
     kyokumen = copy(kyokumen)
     next!(kyokumen, move)
+end
+
+function SFENMoves(str::AbstractString)
+    SFENMove.(split(str, " "))
 end

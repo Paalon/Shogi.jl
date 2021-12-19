@@ -11,9 +11,22 @@ const sengo_to_cli = Bijection(Dict(
     後手 => "-",
 ))
 
+const sengo_to_gui = Bijection(Dict(
+    先手 => "☗",
+    後手 => "☖",
+))
+
 string_cli(sengo::Sengo) = sengo_to_cli[sengo]
+string_gui(sengo::Sengo) = sengo_to_gui[sengo]
 
 # Sengo(str::AbstractString) = sengo_to_cli(str)
+
+function string_gui(xy::Tuple{Integer, Integer})
+    x, y = xy
+    x_char = int_to_zenkaku[x]
+    y_char = int_to_zenkaku[y]
+    "$x_char$y_char"
+end
 
 const koma_to_cli = Bijection(Dict(
     歩兵 => "歩",
@@ -32,9 +45,27 @@ const koma_to_cli = Bijection(Dict(
     竜王 => "竜",
 ))
 
+const koma_to_gui = Bijection(Dict(
+    歩兵 => "歩",
+    香車 => "香",
+    桂馬 => "桂",
+    銀将 => "銀",
+    金将 => "金",
+    角行 => "角",
+    飛車 => "飛",
+    玉将 => "玉",
+    と金 => "と",
+    成香 => "成香",
+    成桂 => "成桂",
+    成銀 => "成銀",
+    竜馬 => "馬",
+    竜王 => "竜",
+))
+
 # Koma(str::AbstractString) = koma_to_cli(str)
 
 string_cli(koma::Koma) = koma_to_cli[koma]
+string_gui(koma::Koma) = koma_to_gui[koma]
 
 function _masu_to_cli(masu::Masu)
     if isempty(masu)

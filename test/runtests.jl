@@ -14,6 +14,7 @@ include("kyokumen.jl")
 include("io.jl")
 
 include("coding.jl")
+include("encodedkyokumen.jl")
 
 include("attack.jl")
 
@@ -35,6 +36,8 @@ include("attack.jl")
 include("sfen.jl")
 include("csa.jl")
 include("kakinoki.jl")
+
+include("book.jl")
 
 # Kifu
 # @test sfen(Kifu()) == "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1"

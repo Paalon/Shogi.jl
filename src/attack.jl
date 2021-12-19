@@ -14,6 +14,7 @@ export ispromotable
 export SShogiBoard
 export getexistent
 export getally
+export getenemy
 # export pawn_movements
 # export lance_movements
 # export knight_movements
@@ -68,6 +69,14 @@ function getally(kyokumen::Kyokumen)
     ret = zeros(Bool, 9, 9)
     for i = 1:9, j = 1:9
         ret[i, j] = Sengo(kyokumen) == Sengo(kyokumen[i, j])
+    end
+    SShogiBoard{Bool}(ret)
+end
+
+function getenemy(kyokumen::Kyokumen)
+    ret = zeros(Bool, 9, 9)
+    for i = 1:9, j = 1:9
+        ret[i, j] = next(Sengo(kyokumen)) == Sengo(kyokumen[i, j])
     end
     SShogiBoard{Bool}(ret)
 end

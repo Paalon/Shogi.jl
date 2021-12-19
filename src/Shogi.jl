@@ -11,14 +11,18 @@ include("sengomochigoma.jl")
 include("banmen.jl")
 include("kyokumen.jl")
 include("coding.jl")
+
+include("encodedkyokumen.jl")
+
 # include("jsamotion.jl")
 include("move.jl")
 
 include("attack.jl")
-# include("kifu.jl")
-# include("book.jl")
 
 include("io.jl")
+
+include("book.jl")
+include("kifu.jl")
 
 include("sfen/sfen.jl")
 include("csa/csa.jl")

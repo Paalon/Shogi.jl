@@ -149,8 +149,25 @@ P9+KY+KE+GI+KI+OU+KI+GI+KE+KY
 | ◯ | ◯ | ◯
 |===
 
-== a
+日本将棋連盟の棋譜の指し手の表現形式に対応する。
 
+必要な情報
+
+* 手番
+* 移動先の座標
+* 移動前の移動元の駒
+* `r"^(打?|(右|直|左)?(上|寄|引)?(成|不成)?)$"`
+
+* 手番 `sengo::Bool`
+* 移動元の座標 `source::Integer, 1 <= source <= 9`
+* 移動先の座標 `destination::Integer, 1 \le destination <= 9`
+* 移動前の移動元のマスの状態 `:source_before::Masu or Mochigoma`
+* 移動前の移動先のマスの状態 `:destination_before Masu`
+* 移動後の移動元のマスの状態 `:source_after :: Masu or Mochigoma`
+* 移動後の移動先のマスの状態 `:destination_after :: Masu`
+* 
+
+* r"^((☗|☖)(１|２|３|４|５|６|７|８|９)(１|２|３|４|５|６|７|８|９)(歩|香|桂|銀|金|角|飛|玉|と|成香|成桂|成銀|馬|竜)(打?|(右|直|左)?(上|寄|引)?(成|不成)?))$"
 
 局面から局面への写像が手。
 手の表現方法には複数ある。

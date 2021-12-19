@@ -6,6 +6,10 @@
 # 予想は 10^68 ~ 10^69, つまり 225 bit ~ 233 bit である。
 
 export encode, decode
+export SengoFromBitString
+export KomaFromBitString
+export MasuFromBitString
+export KyokumenFromBitString
 
 import Base:
     bitstring
@@ -14,17 +18,17 @@ function bitstring(sengo::Sengo)
     ifelse(issente(sengo), "1", "0")
 end
 
-function decode_sengo(str::AbstractString)
-    if str == "1"
+function SengoFromBitString(bitstr::AbstractString)
+    if bitstr == "1"
         先手
-    elseif str == "0"
+    elseif bitstr == "0"
         後手
     else
-        error("Invalid code: $str")
+        error("Invalid code: $bitstr")
     end
 end
 
-function decode_sengo(str::AbstractString, state)
+function SengoFromBitString(str::AbstractString, state)
     valstate = iterate(str, state)
     if !isnothing(valstate)
         char, state = valstate
@@ -59,7 +63,7 @@ function bitstring(koma::Koma)
     koma_code[koma]
 end
 
-function decode_koma(str::AbstractString, state)
+function KomaFromBitString(str::AbstractString, state)
     char, state = iterate(str, state)
     koma = if char == '0'
         # 歩兵・と金
@@ -159,13 +163,13 @@ function bitstring(masu::Masu)
     masu_code[masu]
 end
 
-function decode_masu(str::AbstractString, state)
+function MasuFromBitString(str::AbstractString, state)
     char, state = iterate(str, state)
     masu = if char == '0'
         〼
     else
-        sengo, state = decode_sengo(str, state)
-        koma, state = decode_koma(str, state)
+        sengo, state = SengoFromBitString(str, state)
+        koma, state = KomaFromBitString(str, state)
         Masu(koma, sengo)
     end
     masu, state
@@ -195,13 +199,13 @@ function bitstring(mochigoma::SengoMochigoma)
     for (i, n) in enumerate(mochigoma.sente.komasuus)
         koma = KomaFromMochigomaIndex(i)
         for k = 1:n
-            code = "$(bitstring(koma))$(bitstring(sente))$(code)"
+            code = "$(bitstring(koma))$(bitstring(先手))$(code)"
         end
     end
     for (i, n) in enumerate(mochigoma.gote.komasuus)
         koma = KomaFromMochigomaIndex(i)
         for k = 1:n
-            code = "$(bitstring(koma))$(bitstring(gote))$(code)"
+            code = "$(bitstring(koma))$(bitstring(後手))$(code)"
         end
     end
     code
@@ -236,9 +240,9 @@ function decode_kp(str::AbstractString)
     decode_index(n)
 end
 
-function decode_kyokumen(str::AbstractString)
+function KyokumenFromBitString(str::AbstractString)
     # decode teban
-    teban = decode_sengo(str[end:end])
+    teban = SengoFromBitString(str[end:end])
 
     # decode banmen
     banmen = Banmen()
@@ -254,7 +258,7 @@ function decode_kyokumen(str::AbstractString)
         i, j = decode_index(n)
         if (i, j) ≠ sentekp && (i, j) ≠ gotekp
             # 玉将の位置はスキップする。
-            masu, state = decode_masu(banmen_mochigoma_str, state)
+            masu, state = MasuFromBitString(banmen_mochigoma_str, state)
             banmen[i, j] = masu
         end
         n += 1
@@ -263,8 +267,8 @@ function decode_kyokumen(str::AbstractString)
     # decode mochigoma
     mochigoma = (sente = Mochigoma(), gote = Mochigoma())
     while checkbounds(Bool, banmen_mochigoma_str, state)
-        sengo, state = decode_sengo(banmen_mochigoma_str, state)
-        koma, state = decode_koma(banmen_mochigoma_str, state)
+        sengo, state = SengoFromBitString(banmen_mochigoma_str, state)
+        koma, state = KomaFromBitString(banmen_mochigoma_str, state)
         if issente(sengo)
             mochigoma.sente[koma] += 1
         else
@@ -283,5 +287,5 @@ Decode a encoded string in the given `base` to a `kyokumen`.
 function decode(str::AbstractString; base = 16)
     n = parse(BigInt, str, base = base)
     bitstr = string(n, base = 2, pad = 256)
-    decode_kyokumen(bitstr)
+    KyokumenFromBitString(bitstr)
 end

@@ -35,6 +35,3 @@ next(sengo::Sengo) = Sengo(!issente(sengo))
 Return `+1` if `sengo` is `sente`, `-1` otherwise.
 """
 sign(sengo::Sengo) = ifelse(issente(sengo), +1, -1)
-
-# istekijin(sengo::Sengo, y::Int8) = (issente(sengo) && 1 ≤ y ≤ 3) || (!issente(sengo) && 7 ≤ y ≤ 9)
-# istekijin(sengo::Sengo, ::Int8, y::Int8) = istekijin(sengo, y)

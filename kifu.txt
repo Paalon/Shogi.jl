@@ -7,6 +7,18 @@ position startpos moves 5g5f 3c3d 2h5h
 position startpos moves 2g2f 3c3d 7g7f
 position sfen lnsgkgsnl/1r5b1/pppppp1pp/6p2/9/2P4P1/PP1PPPP1P/1B5R1/LNSGKGSNL w - 4 moves 4a3b 2f2e 8c8d 6i7h 8d8e
 position sfen lnsgk1snl/6gb1/p1pppp2p/6R2/9/1rP6/P2PPPP1P/1BG6/LNS1KGSNL w 3P2p 16 moves 2b8h+ 7i8h
+# 横歩取り・☖角交換・☖３３桂
+position sfen lnsgk1snl/6g2/p1pppp2p/6R2/9/1rP6/P2PPPP1P/1SG6/LN2KGSNL w B3Pb2p 18 moves 2a3c 5i5h
+# 横歩取り・☖角交換・☖７６飛 == 相横歩取り
+position sfen lnsgk1snl/6g2/p1pppp2p/6R2/9/1rP6/P2PPPP1P/1SG6/LN2KGSNL w B3Pb2p 18 moves 8f7f
+# 相横歩取り☗７７銀
+position sfen lnsgk1snl/6g2/p1pppp2p/6R2/9/2r6/P2PPPP1P/1SG6/LN2KGSNL b B3Pb3p 19 moves 8h7g 7f7d 3d7d 7c7d B*4f P*8f P*8h
+position sfen lnsgk1snl/6g2/p2ppp2p/2p6/9/1p3B3/P1SPPPP1P/1PG6/LN2KGSNL w R2Prb2p 26 moves B*2g 7h7i
+position sfen lnsgk1snl/6g2/p1pppp2p/6R2/9/2r6/P2PPPP1P/1SG6/LN2KGSNL b B3Pb3p 19 moves 8i7g
+position sfen lnsgk1snl/6g2/p1pppp2p/6R2/9/2r6/P2PPPP1P/1SG6/LN2KGSNL b B3Pb3p 19 moves P*7g
+position sfen lnsgk1snl/6g2/p1pppp2p/6R2/9/2r6/P2PPPP1P/1SG6/LN2KGSNL b B3Pb3p 19 moves B*7g
+position sfen lnsgk1snl/6g2/p1pppp2p/6R2/9/2r6/P2PPPP1P/1SG6/LN2KGSNL b B3Pb3p 19 moves 8h8g
+# 横歩取り・☖角交換・☖２８歩
 position sfen lnsgk1snl/6g2/p1pppp2p/6R2/9/1rP6/P2PPPP1P/1SG6/LN2KGSNL w B3Pb2p 18 moves P*2h 3i2h B*4e 3d2d P*2c B*7g 8f8h+ 7g8h 2c2d 8h1a+
 position sfen lnsgk1sn+B/6g2/p1pppp2p/7p1/5b3/2P6/P2PPPP1P/2G4S1/LN2KG1NL w RL4Prs 28 moves 2a3c L*3f
 position sfen lnsgk1sn+B/6g2/p1pppp2p/7p1/5b3/2P6/P2PPPP1P/2G4S1/LN2KG1NL w RL4Prs 28 moves S*8g 1a7g 8g7f 7g6h P*8h R*4f 8h8i+ 4f4e 8i9i L*3d 2a3c 4e3e 3a4b P*7g

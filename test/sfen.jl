@@ -144,4 +144,44 @@
         @test next(KyokumenHirate(), SFENMove("2g2f")) == KyokumenFromSFEN("lnsgkgsnl/1r5b1/ppppppppp/9/9/7P1/PPPPPPP1P/1B5R1/LNSGKGSNL w -")
         @test next(KyokumenHirate(), SFENMove("7g7f")) == KyokumenFromSFEN("lnsgkgsnl/1r5b1/ppppppppp/9/9/2P6/PP1PPPPPP/1B5R1/LNSGKGSNL w -")
     end
+    @testset "EncodedMove" begin
+        sfen_str = "lnsgkgsnl/1r5b1/p1pppp2p/6pp1/1p7/2P6/PP1PPPP1P/1B5R1/LNSGKGSNL b p"
+        kyokumen = KyokumenFromSFEN(sfen_str)
+        @test sfen(kyokumen) == sfen_str
+        ek = EncodedKyokumen(kyokumen)
+        k = Kyokumen(ek)
+        @test k == kyokumen
+    end
+    @testset "Kifu" begin
+        a = KifuFromSFEN("position startpos moves 7g7f 3c3d 2g2f 8c8d")
+        b = KifuFromSFEN("position startpos moves 7g7f 8c8d 2g2f 3c3d")
+        c = KifuFromSFEN("position startpos moves 2g2f 3c3d 7g7f 8c8d")
+        d = KifuFromSFEN("position startpos moves 2g2f 8c8d 7g7f 3c3d")
+        ak = getkyokumen(a, 5)
+        bk = getkyokumen(b, 5)
+        ck = getkyokumen(c, 5)
+        dk = getkyokumen(d, 5)
+        @test ak == bk == ck == dk
+
+        sfen_kifu = "position startpos moves 7g7f 3c3d 2g2f 8c8d 2f2e 8d8e 2e2d 2c2d"
+        sfen_kyokumen = "lnsgkgsnl/1r5b1/p1pppp2p/6pp1/1p7/2P6/PP1PPPP1P/1B5R1/LNSGKGSNL b p"
+        kifu = KifuFromSFEN(sfen_kifu)
+        n = size(kifu.graph)[1]
+        kyokumen = getkyokumen(kifu, n)
+        @test sfen(kyokumen) == sfen_kyokumen
+
+        sfen_kifu = "position startpos moves 7g7f 3c3d 2g2f 8c8d 2f2e 8d8e 2e2d 2c2d 2h2d 4a3b 6i7h 8e8f 8g8f 8b8f 2d3d"
+        sfen_kyokumen = "lnsgk1snl/6gb1/p1pppp2p/6R2/9/1rP6/P2PPPP1P/1BG6/LNS1KGSNL w 3P2p"
+        kifu = KifuFromSFEN(sfen_kifu)
+        n = size(kifu.graph)[1]
+        kyokumen = getkyokumen(kifu, n)
+        @test sfen(kyokumen) == sfen_kyokumen
+
+        sfen_kifu = "position startpos moves 7g7f 3c3d 2g2f 8c8d 2f2e 8d8e 2e2d 2c2d 2h2d 4a3b 6i7h 8e8f 8g8f 8b8f 2d3d 2b8h+ 7i8h P*2h 3i2h B*4e 3d2d P*2c B*7g 8f8h+ 7g8h 2c2d 8h1a+"
+        sfen_kyokumen = "lnsgk1sn+B/6g2/p1pppp2p/7p1/5b3/2P6/P2PPPP1P/2G4S1/LN2KG1NL w RL4Prs"
+        kifu = KifuFromSFEN(sfen_kifu)
+        n = size(kifu.graph)[1]
+        kyokumen = getkyokumen(kifu, n)
+        @test sfen(kyokumen) == sfen_kyokumen
+    end
 end

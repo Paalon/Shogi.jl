@@ -1,7 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export SengoMochigoma
-export Kyokumen, sfen, teban_mochigoma, toru!, teban_pieces
+export Kyokumen, sfen, toru!, teban_pieces
 export Sengo
 export gettebanmochigoma
 export SFENKyokumen, SFENKyokumenFromSFEN
@@ -85,16 +85,8 @@ function Sengo(kyokumen::Kyokumen)
     kyokumen.teban
 end
 
-function teban_mochigoma(kyokumen::Kyokumen)
+function gettebanmochigoma(kyokumen::Kyokumen)
     if issente(kyokumen)
-        kyokumen.mochigoma.sente
-    else
-        kyokumen.mochigoma.gote
-    end
-end
-
-function gettebanmochigoma(kyokumen::Kyokumen, teban::Sengo)
-    if issente(teban)
         kyokumen.mochigoma.sente
     else
         kyokumen.mochigoma.gote
@@ -151,7 +143,7 @@ function toru!(kyokumen::Kyokumen, x::Integer, y::Integer)
     sengo = Sengo(masu)
     if !isnothing(koma) && !isnothing(sengo)
         if kyokumen.teban ≠ sengo
-            mochigoma = teban_mochigoma(kyokumen)
+            mochigoma = gettebanmochigoma(kyokumen)
             mochigoma[koma] += 1
             kyokumen[x, y] = Masu(0)
         else
