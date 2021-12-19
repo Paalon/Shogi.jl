@@ -53,11 +53,12 @@ end
 
 function next!(kyokumen::Kyokumen, move::CSADrop)
     Sengo(kyokumen) == move.sengo || error("手番が一致しない。")
-    kyokumen[move.dst...] ≠ 〼 || error("移動先が空きマスでない。")
+    sengo = move.sengo
+    kyokumen[move.dst...] == 〼 || error("移動先が空きマスでない。")
     gettebanmochigoma(kyokumen)[move.koma] ≥ 1 || error("打ちたい駒を持っていない。")
-    kyokumen[move.dst...] = move.koma
+    kyokumen[move.dst...] = Masu(sengo, move.koma)
     gettebanmochigoma(kyokumen)[move.koma] -= 1
-    kyokumen.teban = next(kyokumen.teban)
+    kyokumen.teban = next(sengo)
     kyokumen
 end
 

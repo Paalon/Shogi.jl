@@ -6,6 +6,7 @@ include("masu.jl")
 include("banmen.jl")
 include("kyokumen.jl")
 include("move.jl")
+include("kifu.jl")
 
 # function next_from_csa!(kyokumen::Kyokumen, str::AbstractString)
 #     # check length
@@ -116,45 +117,6 @@ include("move.jl")
 #     koma_str = csa(koma)
 #     teban_str = csa(kyokumen.teban)
 #     "$teban_str$x0$y0$x1$y1$koma_str"
-# end
-
-# function KifuFromCSA(filename::AbstractString)
-#     open(filename, "r") do io
-#         while !eof(io)
-#             char = read(io, Char)
-#             # コメント
-#             if char == '''
-#                 _ = readuntil(io, '\n')
-#             elseif char == 'V'
-#                 version = readuntil(io, '\n')
-#                 # 対局者名
-#             elseif char == 'N'
-#                 char = read(io, Char)
-#                 if char == '+'
-#                     先手の対局者名 = readuntil(io, '\n')
-#                 elseif char == '-'
-#                     後手の対局者名 = readuntil(io, '\n')
-#                 else
-#                     @warn "対局者名の指定が変です。"
-#                     _ = readuntil(io, '\n')
-#                 end
-#             elseif char == '$'
-#                 @info "各種棋譜情報は読み飛ばされます。"
-#                 _ = readuntil(io, '\n')
-#             elseif char == '%'
-#             elseif char == '+'
-#                 kyokumen = Kyokumen()
-#             elseif char == '-'
-#                 kyokumen = Kyokumen()
-#             elseif char == 'T'
-#                 @info "持ち時間は読み飛ばされます。"
-#             elseif char == 'P'
-#                 char = read(io, Char)
-#                 n = parse(Int, char)
-
-#             end
-#         end
-#     end
 # end
 
 # str = """
