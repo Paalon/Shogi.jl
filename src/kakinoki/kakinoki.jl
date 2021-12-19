@@ -1,46 +1,9 @@
-# http://kakinoki.o.oo7.jp/kif_format.html
+# Copyright 2021-12-17 Koki Fushimi
+# Functionality for Kakinoki's KIF format
+# See http://kakinoki.o.oo7.jp/kif_format.html for the detail of Kakinoki's KIF format.
 
-export kakinoki
-export SengoFromKakinoki
-export KomaFromKakinoki
-
-const sengo_to_kakinoki = Bijection(Dict(
-    先手 => "▲",
-    後手 => "△",
-))
-
-function kakinoki(sengo::Sengo)
-    sengo_to_kakinoki[sengo]
-end
-
-function SengoFromKakinoki(str::AbstractString)
-    sengo_to_kakinoki(str)
-end
-
-const koma_to_kakinoki = Bijection(Dict(
-    玉将 => "玉",
-    飛車 => "飛",
-    竜王 => "龍",
-    角行 => "角",
-    竜馬 => "馬",
-    金将 => "金",
-    銀将 => "銀",
-    成銀 => "成銀",
-    桂馬 => "桂",
-    成桂 => "成桂",
-    香車 => "香",
-    成香 => "成香",
-    歩兵 => "歩",
-    と金 => "と",
-))
-
-function kakinoki(koma::Koma)
-    koma_to_kakinoki[koma]
-end
-
-function KomaFromKakinoki(str::AbstractString)
-    koma_to_kakinoki(str)
-end
+include("sengo.jl")
+include("koma.jl")
 
 """
     KifuFromKakinoki(str::AbstractString)

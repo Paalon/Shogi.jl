@@ -22,6 +22,6 @@ include("io.jl")
 
 include("sfen/sfen.jl")
 include("csa/csa.jl")
-include("kakinoki.jl")
+include("kakinoki/kakinoki.jl")
 
 end
