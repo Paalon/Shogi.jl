@@ -88,7 +88,7 @@ end
 function next!(kyokumen::Kyokumen, move::SFENDrop)
     koma = move.koma
     mochigoma = gettebanmochigoma(kyokumen)
-    mochigoma[koma] ≥ 1 || error()
+    mochigoma[koma] ≥ 1 || error("$kyokumen\n$move")
     mochigoma[koma] -= 1
     kyokumen[move.dst...] = Masu(kyokumen.teban, koma)
     kyokumen.teban = next(kyokumen.teban)

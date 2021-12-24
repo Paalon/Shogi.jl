@@ -8,14 +8,14 @@ function Kifu(kyokumen::Kyokumen)
     book
 end
 
-function Kifu(kyokumen::Kyokumen, moves::Vector{<:KyokumenMove})
+function Kifu(kyokumen::Kyokumen, moves::Vector{<:KyokumenMove}; weight=1.0)
     book = Book()
     k1 = kyokumen
     for move in moves
         k0 = k1
         k1 = next(k0, move)
         em = EncodedMove(k0, k1)
-        addmove!(book, em)
+        addmove!(book, em; weight=weight)
     end
     book
 end

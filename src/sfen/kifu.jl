@@ -1,6 +1,7 @@
 export KifuFromSFEN
 
-function KifuFromSFEN(str::AbstractString)
+function KifuFromSFEN(str::AbstractString; weight=1.0)
+    str = strip(str)
     args = split(str, " ", limit=2)
     if args[1] == "position" && length(args) == 2
         # "position <args>".
@@ -19,7 +20,7 @@ function KifuFromSFEN(str::AbstractString)
                 moves_str = args[6]
                 kyokumen = KyokumenFromSFEN(sfen_str)
                 moves = SFENMoves(moves_str)
-                Kifu(kyokumen, moves)
+                Kifu(kyokumen, moves; weight=weight)
             else
                 error("Does not match to `position sfen <sfenstring> (moves <move-strings>)`. $str")
             end
@@ -36,7 +37,7 @@ function KifuFromSFEN(str::AbstractString)
                     # "position startpos moves <args>"
                     moves_str = args[2]
                     moves = SFENMoves(moves_str)
-                    Kifu(kyokumen, moves)
+                    Kifu(kyokumen, moves; weight=weight)
                 else
                     error("Does not match to `position startpos (moves <move-strings>)`. $str")
                 end

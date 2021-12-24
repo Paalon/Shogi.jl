@@ -10,6 +10,7 @@ export rmkyokumen!
 export getkyokumen
 export hasmove
 export addmove!
+export addlabel!
 export write_graphviz
 export read_graphviz
 
@@ -105,7 +106,7 @@ function hasmove(book::Book, move::EncodedMove)
     has_edge(book.graph, v0, v1)
 end
 
-function addmove!(book::Book, move::EncodedMove)
+function addmove!(book::Book, move::EncodedMove; weight=1.0)
     tail = gettail(move)
     head = gethead(move)
     t = filter_vertices(book.graph, :kyokumen, tail)
@@ -120,7 +121,14 @@ function addmove!(book::Book, move::EncodedMove)
     v1 = get_vertex(book, head)
     if !has_edge(book.graph, v0, v1)
         add_edge!(book.graph, v0, v1, :move, move)
+        set_prop!(book.graph, v0, v1, :weight, weight)
     end
+    book
+end
+
+function addlabel!(book::Book, kyokumen::Union{Kyokumen,EncodedKyokumen}, label::AbstractString)
+    v = get_vertex(book, kyokumen)
+    set_prop!(book.graph, v, :label, label)
     book
 end
 
@@ -128,17 +136,32 @@ function print_graphviz(io::IO, book::Book)
     for v in vertices(book.graph)
         ek = get_prop(book.graph, v, :kyokumen)
         ek_str = string(ek)
-        label = "$v"
+        label = if has_prop(book.graph, v, :label)
+            val = get_prop(book.graph, v, :label)
+            "$val\n$v"
+        else
+            "$v"
+        end
         print(io, "\"$ek_str\" [label=\"$label\"];\n")
     end
     for e in edges(book.graph)
         move = get_prop(book.graph, e, :move)
-        move_str = getname(move)
+        weight = get_prop(book.graph, e, :weight)
+        weight_str = string(weight)
         ek0 = gettail(move)
         ek1 = gethead(move)
         ek0_str = string(ek0)
         ek1_str = string(ek1)
-        print(io, "\"$ek0_str\" -> \"$ek1_str\" [label=\"$move_str\"];\n")
+        try
+            move_str = getname(move)
+            print(io, "\"$ek0_str\" -> \"$ek1_str\" [label=\"$move_str\", penwidth=\"$weight_str\"];\n")
+        catch err
+            k0 = Kyokumen(ek0)
+            k1 = Kyokumen(ek1)
+            println(k0)
+            println(k1)
+            throw(err)
+        end
     end
 end
 
@@ -188,10 +211,15 @@ function Base.merge(books::Book...)
         for v in vs
             kyokumen = get_prop(book.graph, v, :kyokumen)
             addkyokumen!(ret, kyokumen)
+            if has_prop(book.graph, v, :label)
+                label = get_prop(book.graph, v, :label)
+                addlabel!(ret, kyokumen, label)
+            end
         end
         for e in es
             move = get_prop(book.graph, e, :move)
-            addmove!(ret, move)
+            weight = get_prop(book.graph, e, :weight)
+            addmove!(ret, move; weight=weight)
         end
     end
     ret
@@ -202,8 +230,8 @@ end
 function write_graphviz(filename::AbstractString, book::Book)
     open(filename, "w") do io
         print(io, "digraph {\n")
-        print(io, "node [fontname=\"Menlo\"]\n")
-        print(io, "edge [fontname=\"Menlo\"]\n")
+        print(io, "node [fontname=\"Verdana\"]\n")
+        print(io, "edge [fontname=\"Verdana\"]\n")
         print_graphviz(io, book)
         print(io, "}\n")
     end
