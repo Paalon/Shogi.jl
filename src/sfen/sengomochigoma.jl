@@ -19,20 +19,20 @@ function SengoMochigomaFromSFEN(str::AbstractString)
         valstate = iterate(str)
         while !isnothing(valstate)
             char, state = valstate
-            if isdigit(char)
-                n = parse(Int8, char)
+            ns = ""
+            while isdigit(char)
+                ns *= char
                 char, state = iterate(str, state)
-                if islowercase(char)
-                    mochigoma.gote[KomaFromSFEN(string(uppercase(char)))] = n
-                else
-                    mochigoma.sente[KomaFromSFEN(string(char))] = n
-                end
+            end
+            n = if isempty(ns)
+                1
             else
-                if islowercase(char)
-                    mochigoma.gote[KomaFromSFEN(string(uppercase(char)))] = 1
-                else
-                    mochigoma.sente[KomaFromSFEN(string(char))] = 1
-                end
+                parse(Int, ns)
+            end
+            if islowercase(char)
+                mochigoma.gote[KomaFromSFEN(string(uppercase(char)))] = n
+            else
+                mochigoma.sente[KomaFromSFEN(string(char))] = n
             end
             valstate = iterate(str, state)
         end
