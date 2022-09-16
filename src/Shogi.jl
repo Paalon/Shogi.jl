@@ -28,4 +28,8 @@ include("sfen/sfen.jl")
 include("csa/csa.jl")
 include("kakinoki/kakinoki.jl")
 
+include("usi.jl")
+
+include("makeimage.jl")
+
 end
