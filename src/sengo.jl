@@ -7,30 +7,42 @@ export issente, next
 import Base.sign
 
 """
-    Sengo
+    Sengo::DataType
 
-先後を表す型。
+The type for sente and gote.
 """
-@enum Sengo::Bool 先手 = 1 後手 = 0
+@enum Sengo::Bool ☗ = 1 ☖ = 0
+
+"""
+    ☗::Sengo
+Sente.
+"""
+☗
+
+"""
+    ☖::Sengo
+Gote.
+"""
+☖
 
 @exportinstances Sengo
 
 """
-    issente(sengo::Sengo)
+    issente(sengo::Sengo)::Bool
 
 Return `true` if the state is sente, `false` otherwise.
 """
 issente(sengo::Sengo) = Integer(sengo)
 
 """
-    next(sengo::Sengo)
+    next(sengo::Sengo)::Sengo
 
 Return next turn's state.
 """
 next(sengo::Sengo) = Sengo(!issente(sengo))
 
 """
-    sign(sengo::Sengo)
+    sign(sengo::Sengo)::Int
 
 Return `+1` if `sengo` is `sente`, `-1` otherwise.
 """
