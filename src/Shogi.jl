@@ -2,6 +2,11 @@
 
 module Shogi
 
+export AbstractKifu
+export AbstractMetaKifu
+export Kifu
+export MetaKifu
+
 # Export an enum's all instances
 # Thanks to Alex Arslan
 """
