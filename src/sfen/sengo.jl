@@ -2,22 +2,25 @@ export sfen, SengoFromSFEN
 
 using Bijections
 
+"""
+    sengo_to_sfen::Bijection{Sengo, String}
+"""
 const sengo_to_sfen = Bijection(Dict(
-    先手 => "b",
-    後手 => "w",
+    ☗ => "b",
+    ☖ => "w",
 ))
 
 """
-    sfen(sengo::Sengo)
+    sfen(sengo::Sengo)::String
 
-Return SFEN string for the sengo.
+Return a SFEN string from a sengo.
 """
 function sfen(sengo::Sengo)
     sengo_to_sfen[sengo]
 end
 
 """
-    SengoFromSFEN(str::AbstractString)
+    SengoFromSFEN(str::AbstractString)::Sengo
 
 Create sengo from SFEN string.
 """

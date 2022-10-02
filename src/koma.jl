@@ -1,14 +1,21 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export Koma
-# @defer @exportinstances Koma
-export iskogoma, isoogoma, isgoldlike
-export ispromotable, naru, omote, jishogi_score
+export Piece
+export isgyokushou, isoogoma, iskogoma, iskanagoma
+export isking, isminor, ismajor, ismetal
+export jishogi_score
+export isnareru, naru, omote
+export ispromotable, front #= promote, =#
 
 using Bijections
 
-# 常用漢字を使うことにする。
-@enum Koma::Int8 begin
+"""
+    Koma::DataType
+
+The type for komas.
+"""
+@enum Koma::Int8 begin # 常用漢字を使うことにする。
     玉将 = 2
     飛車 = 4
     竜王 = 5
@@ -24,13 +31,37 @@ using Bijections
     歩兵 = 16
     と金 = 17
 end
-
 @exportinstances Koma
+const Piece = Koma
 
+"""
+    isking(koma::Koma)::Bool
+
+Return `true` if the `koma` is a king, and return `false` if not.
+駒が玉将かどうかを返す。
+"""
+isgyokushou(koma::Koma) = koma == 玉将
+const isking = isgyokushou
+
+"""
+    ismajor(koma::Koma)::Bool
+
+Return `true` if the `koma` is a major piece, and return `false` if not.
+駒が大駒かどうかを返す。
+"""
 isoogoma(koma::Koma) = 4 ≤ Integer(koma) ≤ 7
-iskogoma(koma::Koma) = 8 ≤ Integer(koma) ≤ 17
+const ismajor = isoogoma
 
-const _isgoldlike = Dict(
+"""
+    iskogoma(koma::Koma)::Bool
+
+Return `true` if the `koma` is a minor piece, and return `false` if not.
+駒が小駒かどうかを返す。
+"""
+iskogoma(koma::Koma) = 8 ≤ Integer(koma) ≤ 17
+const isminor = iskogoma
+
+const dict_iskanagoma = Dict(
     玉将 => false,
     飛車 => false,
     竜王 => false,
@@ -47,41 +78,89 @@ const _isgoldlike = Dict(
     と金 => true,
 )
 
-function isgoldlike(koma::Koma)
-    _isgoldlike[koma]
+"""
+    iskanagoma(koma::Koma)::Bool
+
+駒が金駒かどうかを返す。
+"""
+function iskanagoma(koma::Koma)
+    dict_iskanagoma[koma]
 end
+const ismetal = iskanagoma
 
 # isomote(koma::Koma) = Integer(koma) % 2 == 0
 # isura(koma::Koma) = !isomote(koma)
 # const isnarigoma = isura
 # iskanagoma(koma::Koma) = 8 ≤ Integer(koma) ≤ 11
 
-function ispromotable(koma::Koma)
+"""
+    isnareru(koma::Koma)::Bool
+
+Return `true` if a koma is promotable, otherwise `false`.
+駒が成れるかどうかを返す。
+"""
+function isnareru(koma::Koma)
     n = Integer(koma)
     n % 2 == 0 && (4 ≤ n ≤ 6 || 10 ≤ n ≤ 17)
 end
+const ispromotable = isnareru
 
-function naru(koma::Koma)
+"""
+    naru(koma::Koma)::Union{Nothing, Koma}
+
+Return promoted koma. If it can't promote, return `nothing`.
+成駒を返す。
+"""
+function naru(koma::Koma)::Union{Nothing,Koma}
     if ispromotable(koma)
         Koma(Integer(koma) + 1)
     else
         nothing
     end
 end
+const promote = naru
 
 function omote(koma::Koma)
     Koma(2(Integer(koma) ÷ 2))
 end
+const front = omote
 
+"""
+    jishogi_score(koma::Koma)::Int
+
+Return the jishogi score of a koma.
+駒の持将棋における点数を返す。
+"""
 function jishogi_score(koma::Koma)
-    if iskogoma(koma)
+    if isminor(koma)
         1
-    elseif isoogoma(koma)
+    elseif ismajor(koma)
         5
     else
         0
     end
 end
+
+# const koma_to_name = Bijection(Dict(
+#     玉将 => "玉将",
+#     飛車 => "飛車",
+#     竜王 => "竜王",
+#     角行 => "角行",
+#     竜馬 => "竜馬",
+#     金将 => "金将",
+#     銀将 => "銀将",
+#     成銀 => "成銀",
+#     桂馬 => "桂馬",
+#     成桂 => "成桂",
+#     香車 => "香車",
+#     成香 => "成香",
+#     歩兵 => "歩兵",
+#     と金 => "と金",
+# ))
+
+# function Base.print(io::IO, koma::Koma)
+#     print(io, koma_to_name[koma])
+# end
 
 # const list_二字竜 = ["玉将", "飛車", "竜王", "角行", "竜馬", "金将", "銀将", "成銀", "桂馬", "成桂", "香車", "成香", "歩兵", "と金"]
 # const list_二字龍 = ["玉将", "飛車", "龍王", "角行", "龍馬", "金将", "銀将", "成銀", "桂馬", "成桂", "香車", "成香", "歩兵", "と金"]

@@ -2,6 +2,11 @@ export sfen, KomaFromSFEN
 
 using Bijections
 
+"""
+    koma_to_sfen::Bijection{Koma, String}
+
+The bijection from Koma to SFEN string.
+"""
 const koma_to_sfen = Bijection(Dict(
     歩兵 => "P",
     香車 => "L",
@@ -20,16 +25,16 @@ const koma_to_sfen = Bijection(Dict(
 ))
 
 """
-    sfen(koma::Koma)
+    sfen(koma::Koma)::String
 
-Return SFEN string for the koma.
+Return a SFEN string from a koma.
 """
 function sfen(koma::Koma)
     koma_to_sfen[koma]
 end
 
 """
-    KomaFromSFEN(str::AbstractString)
+    Koma(str::AbstractString)::Koma
 
 Create koma from SFEN string.
 """

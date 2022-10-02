@@ -36,9 +36,6 @@ const int_to_sfen_dan = Bijection(Dict(1:9 .=> sfen_dans))
 
 integer_to_sfen_suuji(n::Integer) = n |> string |> x -> x[1] |> hankaku_suuji_to_sfen_suuji |> string
 
-# Export an enum's all instances
-# Thanks to Alex Arslan
-macro exportinstances(enum)
-    eval = GlobalRef(Core, :eval)
-    return :($eval($__module__, Expr(:export, map(Symbol, instances($enum))...)))
-end
+# macro importinstances(enum)
+
+# end

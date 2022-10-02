@@ -7,13 +7,13 @@ using Bijections
 import Base: string, show
 
 const sengo_to_cli = Bijection(Dict(
-    先手 => "+",
-    後手 => "-",
+    ☗ => "+",
+    ☖ => "-",
 ))
 
 const sengo_to_gui = Bijection(Dict(
-    先手 => "☗",
-    後手 => "☖",
+    ☗ => "☗",
+    ☖ => "☖",
 ))
 
 string_cli(sengo::Sengo) = sengo_to_cli[sengo]

@@ -22,6 +22,9 @@ function sfen(banmen::Banmen)
     ret
 end
 
+"""
+    BanmenFromSFEN(str::AbstractString)::Banmen
+"""
 function BanmenFromSFEN(str::AbstractString)
     banmen = Banmen()
     iter_res = iterate(str)

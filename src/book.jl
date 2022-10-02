@@ -1,6 +1,7 @@
 # Copyright 2021-12-06 Koki Fushimi
 
 using Graphs, MetaGraphs
+using Serialization
 
 export ShogiGraph
 export Book
@@ -138,9 +139,11 @@ function print_graphviz(io::IO, book::Book)
         ek_str = string(ek)
         label = if has_prop(book.graph, v, :label)
             val = get_prop(book.graph, v, :label)
-            "$val\n$v"
+            # "$val\n$v"
+            "$val"
         else
-            "$v"
+            # "$v"
+            ""
         end
         print(io, "\"$ek_str\" [label=\"$label\"];\n")
     end
@@ -227,16 +230,35 @@ end
 
 # function Base.merge!(a::Book, b::Book...) end
 
-function write_graphviz(filename::AbstractString, book::Book)
+"""
+    write_graphviz(filename::AbstractString, book::Book)::Nothing
+
+Write the book to a GraphViz format file.
+`nodefontname::AbstractString = "Verdana"`
+`edgefontname::AbstractString = "Verdana"`
+`nodeshape::AbstractString = "box"`
+"""
+function write_graphviz(
+    filename::AbstractString,
+    book::Book;
+    nodefontname::AbstractString="Verdana",
+    edgefontname::AbstractString="Verdana",
+    nodeshape::AbstractString="box"
+)
     open(filename, "w") do io
         print(io, "digraph {\n")
-        print(io, "node [fontname=\"Verdana\"]\n")
-        print(io, "edge [fontname=\"Verdana\"]\n")
+        print(io, "node [fontname=\"$nodefontname\", shape=\"$nodeshape\"]\n")
+        print(io, "edge [fontname=\"$edgefontname\"]\n")
         print_graphviz(io, book)
         print(io, "}\n")
     end
 end
 
+"""
+    read_graphviz(filename::AbstractString)::Book
+
+Read the GraphViz file as a book.
+"""
 function read_graphviz(filename::AbstractString)
     book = Book()
     open(filename, "r") do io
@@ -261,4 +283,63 @@ function read_graphviz(filename::AbstractString)
         end
     end
     book
+end
+
+function write_jlserialization(filename::AbstractString, book::Book)
+    serialize(filename, book)
+end
+
+function read_jlserialization(filename::AbstractString)
+    deserialize(filename)
+end
+
+export write_jlserialization, read_jlserialization
+
+import JLD2
+
+function write_jld(filename::AbstractString, book::Book)
+    JLD2.save_object(filename, book)
+end
+
+function read_jld(filename::AbstractString)
+    JLD2.load_object(filename)
+end
+
+export write_jld, read_jld
+
+"""
+    read_yaneuraoudb2016(filename::AbstractString)::Union{Nothing, Book}
+
+YANEURAOU-DB2016 形式の定跡ファイルを読み込み、Book として返す。
+"""
+function read_yaneuraoudb2016(filename::AbstractString)
+    open(filename, "r") do io
+        firstline = readline(io)
+        if firstline ≠ "#YANEURAOU-DB2016 1.00"
+            nothing
+        else
+            book = Book()
+            while !eof(io)
+                line = readline(io)
+                words = split(line, " ")
+                if words[1] == "sfen"
+                    kyokumen = KyokumenFromSFEN(line; verbose=true)
+                    addkyokumen!(book, kyokumen)
+                else
+                    addmove!(book, em)
+                end
+            end
+        end
+    end
+end
+
+"""
+    write_yaneuraoudb2016(filename::AbstractString, book::Book)::Nothing
+
+`book` を `filename` に YANEURAOU-DB2016 形式の定跡ファイルとして書き出す。
+"""
+function write_yaneuraoudb2016(filename::AbstractString, book::Book)
+    open(filename, "w") do io
+        # write(io, "a")
+    end
 end

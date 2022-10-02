@@ -9,6 +9,11 @@ using StaticArrays
 import Base:
     copy, ==, iterate, size, getindex, setindex!, length, show, string, strides, rot180
 
+"""
+    Banmen::DataType
+
+Type representing a shogi-ban.
+"""
 mutable struct Banmen
     matrix::MMatrix{9,9,Int8,81}
 end
@@ -65,6 +70,11 @@ function length(banmen::Banmen)
     length(banmen.matrix)
 end
 
+"""
+    jishogi_score(banmen::Banmen)::Int
+
+Return jishogi score of the banmen.
+"""
 function jishogi_score(banmen::Banmen)
     sum(jishogi_score.(banmen))
 end
@@ -95,7 +105,7 @@ const _BanmenHirate = let
 end
 
 """
-    BanmenHirate
+    BanmenHirate::Banmen
 
 Return the hirate initial banmen.
 """

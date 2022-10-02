@@ -40,20 +40,17 @@ using Bijections
     ☖歩兵 = -16
     ☖と金 = -17
 end
-
 @exportinstances Masu
+# https://chess.stackexchange.com/questions/29968/what-is-the-correct-name-for-a-part-of-a-chessboard-square-or-cell
+const Square = Masu
 
-function issente(masu::Masu)
-    Integer(masu) > 0
-end
+issente(masu::Masu) = Integer(masu) > 0
+const isblack = issente
 
-function isgote(masu::Masu)
-    Integer(masu) < 0
-end
+isgote(masu::Masu) = Integer(masu) < 0
+const iswhite = isgote
 
-function isempty(masu::Masu)
-    masu == 〼
-end
+isempty(masu::Masu) = masu == 〼
 
 function isomote(masu::Masu)
     if isempty(masu)
@@ -62,12 +59,13 @@ function isomote(masu::Masu)
         Integer(masu) % 2 == 0
     end
 end
+const isfront = isomote
 
 function Sengo(masu::Masu)
     if issente(masu)
-        先手
+        ☗
     elseif isgote(masu)
-        後手
+        ☖
     else
         nothing
     end
@@ -104,9 +102,9 @@ function naru(masu::Masu)
     end
 end
 
-function string_original(masu::Masu)
-    masu_to_original[masu]
-end
+# function string_original(masu::Masu)
+#     masu_to_original[masu]
+# end
 
 # function jishogi_score(masu::Masu)
 #     if Integer(masu) == 0

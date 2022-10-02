@@ -2,9 +2,12 @@ export kakinoki, SengoFromKakinoki
 
 using Bijections
 
+"""
+    sengo_to_kakinoki::Bijection{Sengo, String}
+"""
 const sengo_to_kakinoki = Bijection(Dict(
-    先手 => "▲",
-    後手 => "△",
+    ☗ => "▲",
+    ☖ => "△",
 ))
 
 function kakinoki(sengo::Sengo)

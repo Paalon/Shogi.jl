@@ -5,6 +5,22 @@
 # 局面数は 10^60 ~ 10^70, つまり 199 bit ~ 233 bit で可逆圧縮可能であることが証明されている。
 # 予想は 10^68 ~ 10^69, つまり 225 bit ~ 233 bit である。
 
+# 先手 => "1",
+# 後手 => "0",
+# 成 => "1",
+# 不成 => "0",
+# 不在 => "0",
+# 存在 => "1",
+
+# 歩兵 => "0", 18
+# 香車 => "01", 4
+# 桂馬 => "101", 4
+# 銀将 => "011", 4
+# 金将 => "0111", 4
+# 角行 => "01111", 2
+# 飛車 => "11111", 2
+# 玉将 => "" 2
+
 export encode, decode
 export SengoFromBitString
 export KomaFromBitString
@@ -20,9 +36,9 @@ end
 
 function SengoFromBitString(bitstr::AbstractString)
     if bitstr == "1"
-        先手
+        ☗
     elseif bitstr == "0"
-        後手
+        ☖
     else
         error("Invalid code: $bitstr")
     end
@@ -33,9 +49,9 @@ function SengoFromBitString(str::AbstractString, state)
     if !isnothing(valstate)
         char, state = valstate
         if char == '1'
-            先手, state
+            ☗, state
         else
-            後手, state
+            ☖, state
         end
     else
         nothing
@@ -199,13 +215,13 @@ function bitstring(mochigoma::SengoMochigoma)
     for (i, n) in enumerate(mochigoma.sente.komasuus)
         koma = KomaFromMochigomaIndex(i)
         for k = 1:n
-            code = "$(bitstring(koma))$(bitstring(先手))$(code)"
+            code = "$(bitstring(koma))$(bitstring(☗))$(code)"
         end
     end
     for (i, n) in enumerate(mochigoma.gote.komasuus)
         koma = KomaFromMochigomaIndex(i)
         for k = 1:n
-            code = "$(bitstring(koma))$(bitstring(後手))$(code)"
+            code = "$(bitstring(koma))$(bitstring(☖))$(code)"
         end
     end
     code
@@ -223,7 +239,7 @@ end
 
 Encode a `kyokumen` to a string in the given `base`.
 """
-function encode(kyokumen::Kyokumen; base=16)
+function encode(kyokumen::Kyokumen; base = 16)
     str = bitstring(kyokumen)
     n = parse(BigInt, str, base = 2)
     string(n, base = base, pad = ceil(Int, 256 / log2(base)))

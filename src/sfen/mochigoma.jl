@@ -1,5 +1,10 @@
 export sfen, MochigomaFromSFEN
 
+"""
+    sfen(mochigoma::Mochigoma)::String
+
+Return a SFEN string from a mochigoma.
+"""
 function sfen(mochigoma::Mochigoma)
     ret = ""
     for (i, n) in enumerate(mochigoma.komasuus)
@@ -20,7 +25,7 @@ function sfen(mochigoma::Mochigoma)
 end
 
 """
-    MochigomaFromSFEN(str::AbstractString)
+    MochigomaFromSFEN(str::AbstractString)::Mochigoma
 
 Construct `Mochigoma` object from SFEN Mochigoma string.
 See detail http://shogidokoro.starfree.jp/usi.html for SFEN format in USI.

@@ -116,6 +116,10 @@ function next(kyokumen::Kyokumen, move::SFENMove)
     next!(kyokumen, move)
 end
 
+# function sfen(move::EncodedMove)
+
+# end
+
 function SFENMoves(str::AbstractString)
     SFENMove.(split(str, " "))
 end

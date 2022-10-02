@@ -39,8 +39,8 @@ end
 
 function Sengo(ek::EncodedKyokumen)
     if ek.n2 % 2 == 0
-        後手
+        ☖
     else
-        先手
+        ☗
     end
 end

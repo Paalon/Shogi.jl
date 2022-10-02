@@ -7,7 +7,7 @@ import Base:
 using StaticArrays
 
 """
-    Mochigoma
+    Mochigoma::DataType
 
 Type for mochigoma of shogi.
 """

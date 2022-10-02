@@ -8,6 +8,11 @@ export EncodedMove
 export gettail, gethead, getname
 export gettaildecoded, getheaddecoded
 
+"""
+    AbstractMove::DataType
+
+Type representing a shogi move.
+"""
 abstract type AbstractMove end
 
 """
@@ -19,23 +24,23 @@ tail 局面までの棋譜を与えると head 局面を記述できる指し手
 abstract type KifuMove <: AbstractMove end
 
 """
-    KyokumenMove <: KifuMove
+    KyokumenMove::DataType <: KifuMove
 
 tail 局面を与えると head 局面を記述できる指し手の表現を表す型。
 """
 abstract type KyokumenMove <: KifuMove end
 
 """
-    CompleteMove <: KyokumenMove
+    CompleteMove::DataType <: KyokumenMove
 
 tail 局面と head 局面の情報を持つ指し手の表現を表す型。
 """
 abstract type CompleteMove <: KyokumenMove end
 
 """
-    EncodedKyokumen <: CompleteMove
+    EncodedMove::DataType <: CompleteMove
 
-圧縮された局面の型。
+圧縮された局面を実装する型。
 """
 struct EncodedMove <: CompleteMove
     tail1::UInt128
@@ -88,6 +93,16 @@ function getheaddecoded(move::EncodedMove)
     s2 = bitstring(move.head2)
     decode("$s1$s2", base = 2)
 end
+
+# function getname(move::Move)
+#     head = gethead(move)
+#     tail = gettail(move)
+#     sengo = Sengo(head)
+#     bb0 = getally(head)
+#     bb1 = getenemy(tail)
+#     xbb = xor.(bb0, bb1)
+#     n = sum(xbb)
+# end
 
 function getname(ek::EncodedMove)
     k0 = gettaildecoded(ek)

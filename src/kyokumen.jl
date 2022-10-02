@@ -12,45 +12,46 @@ import Base:
     getindex, setindex!
 
 """
-    Kyokumen
+    Kyokumen::DataType
 
-A position state type of shogi game without history.
+Type representing a shogi kyokumen without the history.
 """
 mutable struct Kyokumen
     banmen::Banmen
     mochigoma::SengoMochigoma
     teban::Sengo
 end
+const GameState = Kyokumen
 
 """
-    Kyokumen()
+    Kyokumen()::Kyokumen
 
-Construct a vacant kyokumen.
+Construct a vacant kyokumen. Use `KyokumenHirate` for standard shogi initial kyokumen.
 """
 function Kyokumen()
     Kyokumen(
         Banmen(),
         (
-            sente = Mochigoma(),
-            gote = Mochigoma(),
+            sente=Mochigoma(),
+            gote=Mochigoma(),
         ),
-        先手,
+        sente,
     )
 end
 
 """
-    KyokumenHirate()
+    KyokumenHirate()::Kyokumen
 
-Construct the hirate initial kyokumen.
+Construct the initial hirate kyokumen.
 """
 function KyokumenHirate()
     Kyokumen(
         BanmenHirate(),
         (
-            sente = Mochigoma(),
-            gote = Mochigoma(),
+            sente=Mochigoma(),
+            gote=Mochigoma(),
         ),
-        先手,
+        sente,
     )
 end
 
@@ -62,8 +63,8 @@ function copy(kyokumen::Kyokumen)
     Kyokumen(
         copy(kyokumen.banmen),
         (
-            sente = copy(kyokumen.mochigoma.sente),
-            gote = copy(kyokumen.mochigoma.gote),
+            sente=copy(kyokumen.mochigoma.sente),
+            gote=copy(kyokumen.mochigoma.gote),
         ),
         kyokumen.teban,
     )
@@ -97,8 +98,8 @@ function rot180(kyokumen::Kyokumen)
     Kyokumen(
         rot180(kyokumen.banmen),
         (
-            sente = kyokumen.mochigoma.gote,
-            gote = kyokumen.mochigoma.sente,
+            sente=kyokumen.mochigoma.gote,
+            gote=kyokumen.mochigoma.sente,
         ),
         next(kyokumen.teban)
     )
@@ -141,19 +142,14 @@ function toru!(kyokumen::Kyokumen, x::Integer, y::Integer)
     masu = kyokumen[x, y]
     koma = Koma(masu)
     sengo = Sengo(masu)
-    if !isnothing(koma) && !isnothing(sengo)
-        if kyokumen.teban ≠ sengo
-            mochigoma = gettebanmochigoma(kyokumen)
-            mochigoma[koma] += 1
-            kyokumen[x, y] = Masu(0)
-        else
-            error("Cannot capture own koma.")
-        end
-    else
-        error("There is no koma.")
-    end
+    (!isnothing(koma) && !isnothing(sengo)) || error("There is no koma.")
+    kyokumen.teban ≠ sengo || error("Cannot capture own koma.")
+    mochigoma = gettebanmochigoma(kyokumen)
+    mochigoma[koma] += 1
+    kyokumen[x, y] = Masu(0)
     kyokumen
 end
+const capture! = toru!
 
 function remaining_koma_omote(kyokumen::Kyokumen)
     onboard = Mochigoma()
@@ -243,7 +239,8 @@ end
 
 """
     jishogi_score(kyokumen::Kyokumen)
-Return score for jishogi.
+
+Return a jishogi score.
 """
 function jishogi_score(kyokumen::Kyokumen)
     sente, gote = 0, 0
@@ -253,46 +250,30 @@ function jishogi_score(kyokumen::Kyokumen)
     jishogi_score(kyokumen.banmen) + sente - gote
 end
 
-"""
-    SFENKyokumen
+# """
+#     SFENKyokumen::DataType
 
-A kyokumen with tesuu.
-"""
-mutable struct SFENKyokumen
-    kyokumen::Kyokumen
-    tesuu::Integer
-end
+# Type representing a kyokumen with a tesuu.
+# """
+# mutable struct SFENKyokumen
+#     kyokumen::Kyokumen
+#     tesuu::Integer
+# end
 
-function sfen(sfenkyokumen::SFENKyokumen)
-    "$(sfen(sfenkyokumen.kyokumen)) $(sfenkyokumen.tesuu)"
+mutable struct GameStateWithPlyCount
+    gamestate::GameState
+    plycount::Integer
 end
+const 手番付き局面 = GameStateWithPlyCount
 
-function string(sfenkyokumen::SFENKyokumen; style = :sfen)
-    if style == :sfen
-        sfen(sfenkyokumen)
-    else
-        error("Invalid style $style")
-    end
-end
+# function string(sfenkyokumen::GameStateWithPlyCount; style=:sfen)
+#     if style == :sfen
+#         sfen(sfenkyokumen)
+#     else
+#         error("Invalid style $style")
+#     end
+# end
 
-function issente(sfenkyokumen::SFENKyokumen)
-    issente(sfenkyokumen.kyokumen)
-end
-
-function SFENKyokumen(str::AbstractString)
-    banmen_str, teban_str, mochigoma_str, tesuu_str = split(str, " ")
-    kyokumen = Kyokumen(join((banmen_str, teban_str, mochigoma_str), " "))
-    tesuu = parse(Int, tesuu_str)
-    SFENKyokumen(kyokumen, tesuu)
-end
-
-function SFENKyokumenFromSFEN(str::AbstractString)
-    banmen_str, teban_str, mochigoma_str, tesuu_str = split(str, " ")
-    kyokumen = Kyokumen(join((banmen_str, teban_str, mochigoma_str), " "))
-    tesuu = parse(Int, tesuu_str)
-    SFENKyokumen(kyokumen, tesuu)
-end
-
-function Kyokumen(sfenkyokumen::SFENKyokumen)
-    Kyokumen(copy(sfenkyokumen.kyokumen))
-end
+issente(s::GameStateWithPlyCount) = issente(s.gamestate)
+GameState(s::GameStateWithPlyCount) = GameState(copy(s.gamestate))
+plycount(s::GameStateWithPlyCount) = s.plycount

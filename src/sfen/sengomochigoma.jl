@@ -1,5 +1,10 @@
 export sfen, SengoMochigomaFromSFEN
 
+"""
+    sfen(mochigoma::SengoMochigoma)::String
+
+Return a SFEN string from a sengo mochigoma object.
+"""
 function sfen(mochigoma::SengoMochigoma)
     sente = sfen(mochigoma.sente)
     gote = sfen(mochigoma.gote) |> lowercase
@@ -10,10 +15,13 @@ function sfen(mochigoma::SengoMochigoma)
     ret
 end
 
+"""
+    SengoMochigomaFromSFEN(str::AbstractString)::NamedTuple{(:sente, :gote), Tuple{Mochigoma, Mochigoma}}
+"""
 function SengoMochigomaFromSFEN(str::AbstractString)
     mochigoma = (
-        sente = Mochigoma(),
-        gote = Mochigoma(),
+        sente=Mochigoma(),
+        gote=Mochigoma(),
     )
     if str != "-"
         valstate = iterate(str)
