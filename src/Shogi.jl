@@ -27,7 +27,7 @@ include("mochigoma.jl")
 include("sengomochigoma.jl")
 include("banmen.jl")
 include("kyokumen.jl")
-# include("coding.jl")
+include("coding.jl")
 
 """
     AbstractKifu

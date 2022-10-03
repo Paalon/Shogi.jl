@@ -36,9 +36,9 @@ end
 
 function SengoFromBitString(bitstr::AbstractString)
     if bitstr == "1"
-        ☗
+        sente
     elseif bitstr == "0"
-        ☖
+        gote
     else
         error("Invalid code: $bitstr")
     end
@@ -49,9 +49,9 @@ function SengoFromBitString(str::AbstractString, state)
     if !isnothing(valstate)
         char, state = valstate
         if char == '1'
-            ☗, state
+            sente, state
         else
-            ☖, state
+            gote, state
         end
     else
         nothing

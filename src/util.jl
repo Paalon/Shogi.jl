@@ -13,7 +13,6 @@ const hankaku_suujis = '0':'9'
 const zenkaku_suujis = '０':'９'
 const kansuujis = ['〇', '一', '二', '三', '四', '五', '六', '七', '八', '九']
 const sfen_suujis = 'a':'i'
-const sfen_dans = 'a':'i'
 const int8_0_to_9 = Int8(0):Int8(9)
 
 const hankaku_suuji_to_zenkaku_suuji = Bijection(Dict(hankaku_suujis .=> zenkaku_suujis))

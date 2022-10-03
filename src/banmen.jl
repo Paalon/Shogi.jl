@@ -95,6 +95,14 @@ function rot180!(banmen::Banmen)
     banmen.matrix = rot180(banmen.matrix)
 end
 
+"""
+    rot180(banmen::Banmen)
+    rot180!(banmen::Banmen)
+
+Rotate banmen 180 degree.
+"""
+rot180, rot180!
+
 const _BanmenHirate = let
     banmen = Banmen()
     banmen[:, 7] = Masu.(Integer(☗歩兵) * ones(Int8, 9))

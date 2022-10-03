@@ -1,6 +1,7 @@
 # Copyright 2021-11-25 Koki Fushimi
 
 export SengoMochigoma
+export AbstractKyokumen, AbstractMetaKyokumen
 export Kyokumen, sfen, toru!, teban_pieces
 export Sengo
 export gettebanmochigoma
@@ -11,12 +12,15 @@ import Base:
     copy, ==, show, sign,
     getindex, setindex!
 
+abstract type AbstractKyokumen end
+abstract type AbstractMetaKyokumen <: AbstractKyokumen end
+
 """
     Kyokumen::DataType
 
 Type representing a shogi kyokumen without the history.
 """
-mutable struct Kyokumen
+mutable struct Kyokumen <: AbstractKyokumen
     banmen::Banmen
     mochigoma::SengoMochigoma
     teban::Sengo
