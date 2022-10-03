@@ -70,21 +70,11 @@ function copy(kyokumen::Kyokumen)
     )
 end
 
-function getindex(kyokumen::Kyokumen, i...)
-    kyokumen.banmen[i...]
-end
+getindex(kyokumen::Kyokumen, i...) = kyokumen.banmen[i...]
+setindex!(kyokumen::Kyokumen, value, i...) = kyokumen.banmen[i...] = value
 
-function setindex!(kyokumen::Kyokumen, value, i...)
-    kyokumen.banmen[i...] = value
-end
-
-function issente(kyokumen::Kyokumen)
-    issente(kyokumen.teban)
-end
-
-function Sengo(kyokumen::Kyokumen)
-    kyokumen.teban
-end
+issente(kyokumen::Kyokumen) = issente(kyokumen.teban)
+Sengo(kyokumen::Kyokumen) = kyokumen.teban
 
 function gettebanmochigoma(kyokumen::Kyokumen)
     if issente(kyokumen)
@@ -110,10 +100,6 @@ function rot180!(kyokumen::Kyokumen)
     kyokumen.mochigoma.sente, kyokumen.mochigoma.gote = kyokumen.mochigoma.gote, kyokumen.mochigoma.sente
     kyokumen.teban = next(kyokumen.teban)
     kyokumen
-end
-
-function swap_sengo(kyokumen::Kyokumen)
-
 end
 
 # function Kyokumen(str::AbstractString; style = :sfen)

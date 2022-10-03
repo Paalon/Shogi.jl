@@ -59,8 +59,6 @@ end
 mutable struct MetaKifu <: AbstractMetaKifu
 end
 
-include("SFEN.jl")
-
 # module CSA
 # import ..AbstractMetaKifu
 # mutable struct CSAKifu <: AbstractMetaKifu
@@ -107,10 +105,10 @@ include("SFEN.jl")
 # SengoFromSFEN(str::AbstractString) = Sengo(str, SFEN)
 # export SengoFromSFEN
 
-# include("encodedkyokumen.jl")
+include("encodedkyokumen.jl")
 
 # # include("jsamotion.jl")
-# include("move.jl")
+include("move.jl")
 
 # include("attack.jl")
 
