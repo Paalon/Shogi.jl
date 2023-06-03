@@ -1,8 +1,0 @@
-SFEN format
-
-1. 先手の駒は大文字で、後手の駒は小文字で表す。
-2. 歩兵は P/p 香車は L/l ・・・
-3. 成駒はラテン文字の前に `+` を付ける。
-
-局面を `盤 先後 持ち駒 手数` で表す。
-lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL

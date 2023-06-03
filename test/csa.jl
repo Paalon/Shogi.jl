@@ -1,116 +1,73 @@
-@testset verbose = true "CSA" begin
-    @testset "Sengo" begin
-        @test csa(先手) == "+"
-        @test csa(後手) == "-"
-        @test SengoFromCSA("+") == 先手
-        @test SengoFromCSA("-") == 後手
-    end
-    @testset "Koma" begin
-        @test csa(歩兵) == "FU"
-        @test csa(香車) == "KY"
-        @test csa(桂馬) == "KE"
-        @test csa(銀将) == "GI"
-        @test csa(金将) == "KI"
-        @test csa(角行) == "KA"
-        @test csa(飛車) == "HI"
-        @test csa(玉将) == "OU"
-        @test csa(と金) == "TO"
-        @test csa(成香) == "NY"
-        @test csa(成桂) == "NK"
-        @test csa(成銀) == "NG"
-        @test csa(竜馬) == "UM"
-        @test csa(竜王) == "RY"
-        @test KomaFromCSA("FU") == 歩兵
-        @test KomaFromCSA("KY") == 香車
-        @test KomaFromCSA("KE") == 桂馬
-        @test KomaFromCSA("GI") == 銀将
-        @test KomaFromCSA("KI") == 金将
-        @test KomaFromCSA("KA") == 角行
-        @test KomaFromCSA("HI") == 飛車
-        @test KomaFromCSA("OU") == 玉将
-        @test KomaFromCSA("TO") == と金
-        @test KomaFromCSA("NY") == 成香
-        @test KomaFromCSA("NK") == 成桂
-        @test KomaFromCSA("NG") == 成銀
-        @test KomaFromCSA("UM") == 竜馬
-        @test KomaFromCSA("RY") == 竜王
-    end
-    @testset "Masu" begin
-        @test csa(〼) == " * "
-        @test csa(☗歩兵) == "+FU"
-        @test csa(☗香車) == "+KY"
-        @test csa(☗桂馬) == "+KE"
-        @test csa(☗銀将) == "+GI"
-        @test csa(☗金将) == "+KI"
-        @test csa(☗角行) == "+KA"
-        @test csa(☗飛車) == "+HI"
-        @test csa(☗玉将) == "+OU"
-        @test csa(☗と金) == "+TO"
-        @test csa(☗成香) == "+NY"
-        @test csa(☗成桂) == "+NK"
-        @test csa(☗成銀) == "+NG"
-        @test csa(☗竜馬) == "+UM"
-        @test csa(☗竜王) == "+RY"
-        @test csa(☖歩兵) == "-FU"
-        @test csa(☖香車) == "-KY"
-        @test csa(☖桂馬) == "-KE"
-        @test csa(☖銀将) == "-GI"
-        @test csa(☖金将) == "-KI"
-        @test csa(☖角行) == "-KA"
-        @test csa(☖飛車) == "-HI"
-        @test csa(☖玉将) == "-OU"
-        @test csa(☖と金) == "-TO"
-        @test csa(☖成香) == "-NY"
-        @test csa(☖成桂) == "-NK"
-        @test csa(☖成銀) == "-NG"
-        @test csa(☖竜馬) == "-UM"
-        @test csa(☖竜王) == "-RY"
-        @test MasuFromCSA(" * ") == 〼
-        @test MasuFromCSA("+FU") == ☗歩兵
-        @test MasuFromCSA("+KY") == ☗香車
-        @test MasuFromCSA("+KE") == ☗桂馬
-        @test MasuFromCSA("+GI") == ☗銀将
-        @test MasuFromCSA("+KI") == ☗金将
-        @test MasuFromCSA("+KA") == ☗角行
-        @test MasuFromCSA("+HI") == ☗飛車
-        @test MasuFromCSA("+OU") == ☗玉将
-        @test MasuFromCSA("+TO") == ☗と金
-        @test MasuFromCSA("+NY") == ☗成香
-        @test MasuFromCSA("+NK") == ☗成桂
-        @test MasuFromCSA("+NG") == ☗成銀
-        @test MasuFromCSA("+UM") == ☗竜馬
-        @test MasuFromCSA("+RY") == ☗竜王
-        @test MasuFromCSA("-FU") == ☖歩兵
-        @test MasuFromCSA("-KY") == ☖香車
-        @test MasuFromCSA("-KE") == ☖桂馬
-        @test MasuFromCSA("-GI") == ☖銀将
-        @test MasuFromCSA("-KI") == ☖金将
-        @test MasuFromCSA("-KA") == ☖角行
-        @test MasuFromCSA("-HI") == ☖飛車
-        @test MasuFromCSA("-OU") == ☖玉将
-        @test MasuFromCSA("-TO") == ☖と金
-        @test MasuFromCSA("-NY") == ☖成香
-        @test MasuFromCSA("-NK") == ☖成桂
-        @test MasuFromCSA("-NG") == ☖成銀
-        @test MasuFromCSA("-UM") == ☖竜馬
-        @test MasuFromCSA("-RY") == ☖竜王
-    end
-    @testset "Banmen" begin
-        @test csa(Banmen()) == BanmenEmptyCSA
-        @test csa(BanmenHirate()) == BanmenHirateCSA
-        @test BanmenFromCSA(BanmenEmptyCSA) == Banmen()
-        @test BanmenFromCSA(BanmenHirateCSA) == BanmenHirate()
-    end
-    @testset "Kyokumen" begin
-        @test csa(KyokumenHirate()) == KyokumenHirateCSA
-        @test KyokumenFromCSA(KyokumenHirateCSA) == KyokumenHirate()
-    end
-    @testset "Move" begin
-        kyokumen = next(KyokumenHirate(), CSAMove("+2726FU"))
-        @test kyokumen[2, 7] == 〼
-        @test kyokumen[2, 6] == ☗歩兵
-        kyokumen = next(KyokumenHirate(), CSAMove("+7776FU"))
-        @test kyokumen[7, 7] == 〼
-        @test kyokumen[7, 6] == ☗歩兵
-    end
+@testset "CSA" begin
+    @test CSA.string(BLACK) == "+"
+    @test CSA.string(WHITE) == "-"
+
+    @test CSA.string(PAWN) == "FU"
+    @test CSA.string(LANCE) == "KY"
+    @test CSA.string(KNIGHT) == "KE"
+    @test CSA.string(SILVER) == "GI"
+    @test CSA.string(GOLD) == "KI"
+
+    @test CSA.string(BLACK_PAWN) == "+FU"
+    @test CSA.string(WHITE_PAWN) == "-FU"
+
+    @test CSA.string(COORDINATE34) == "34"
+    @test CSA.string(COORDINATE79) == "79"
+    @test CSA.string(COORDINATE81) == "81"
+
+    @test CSA.parse(Color, "+") == BLACK
+    @test CSA.parse(Color, "-") == WHITE
+
+    @test CSA.parse(Piece, "FU") == PAWN
+    @test CSA.parse(Piece, "KY") == LANCE
+    @test CSA.parse(Piece, "KE") == KNIGHT
+    @test CSA.parse(Piece, "GI") == SILVER
+    @test CSA.parse(Piece, "KI") == GOLD
+    @test CSA.parse(Piece, "OU") == KING
+    @test CSA.parse(Piece, "KA") == BISHOP
+    @test CSA.parse(Piece, "HI") == ROOK
+
+    @test CSA.parse(Square, "+FU") == BLACK_PAWN
+    @test CSA.parse(Square, "+KY") == BLACK_LANCE
+    @test CSA.parse(Square, "+KE") == BLACK_KNIGHT
+    @test CSA.parse(Square, "+GI") == BLACK_SILVER
+    @test CSA.parse(Square, "+KI") == BLACK_GOLD
+    @test CSA.parse(Square, "+OU") == BLACK_KING
+    @test CSA.parse(Square, "+KA") == BLACK_BISHOP
+    @test CSA.parse(Square, "+HI") == BLACK_ROOK
+
+    @test CSA.parse(File, "1") == FILE1
+    @test CSA.parse(File, "2") == FILE2
+    @test CSA.parse(File, "3") == FILE3
+    @test CSA.parse(File, "4") == FILE4
+    @test CSA.parse(File, "5") == FILE5
+    @test CSA.parse(File, "6") == FILE6
+    @test CSA.parse(File, "7") == FILE7
+    @test CSA.parse(File, "8") == FILE8
+    @test CSA.parse(File, "9") == FILE9
+
+    @test CSA.parse(Rank, "1") == RANK1
+    @test CSA.parse(Rank, "2") == RANK2
+    @test CSA.parse(Rank, "3") == RANK3
+    @test CSA.parse(Rank, "4") == RANK4
+    @test CSA.parse(Rank, "5") == RANK5
+    @test CSA.parse(Rank, "6") == RANK6
+    @test CSA.parse(Rank, "7") == RANK7
+    @test CSA.parse(Rank, "8") == RANK8
+    @test CSA.parse(Rank, "9") == RANK9
+
+    @test CSA.string(Position()) == """
+                                    P1-KY-KE-GI-KI-OU-KI-GI-KE-KY
+                                    P2 * -HI *  *  *  *  * -KA * 
+                                    P3-FU-FU-FU-FU-FU-FU-FU-FU-FU
+                                    P4 *  *  *  *  *  *  *  *  * 
+                                    P5 *  *  *  *  *  *  *  *  * 
+                                    P6 *  *  *  *  *  *  *  *  * 
+                                    P7+FU+FU+FU+FU+FU+FU+FU+FU+FU
+                                    P8 * +KA *  *  *  *  * +HI * 
+                                    P9+KY+KE+GI+KI+OU+KI+GI+KE+KY
+                                    P+
+                                    P-
+                                    +
+                                    """
 end

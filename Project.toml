@@ -1,23 +1,12 @@
 name = "Shogi"
 uuid = "87abda5e-8ea1-4e4e-a620-0b32156d0927"
 authors = ["Koki Fushimi <paalon1936@gmail.com>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 Bijections = "e2ed5e7c-b2de-5872-ae92-c73ca462fb04"
-DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-Feather = "becb17da-46f6-5d3c-ad1b-1c5fe96bc73c"
-Graphs = "86223c79-3864-5bf0-83f7-82e725a168b6"
-JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
-JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
-MetaGraphs = "626554b9-1ddb-594c-aa3c-2596fe9399a5"
-Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
-Serialization = "9e88b42a-f829-5b0c-bbe9-9e923198166b"
+MetaGraphsNext = "fa8bd995-216d-47f1-8a91-f3b68fbeb377"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
-Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-
-[compat]
-julia = "1.7"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"

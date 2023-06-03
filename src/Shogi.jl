@@ -1,11 +1,4 @@
-# Copyright 2021-11-25 Koki Fushimi
-
 module Shogi
-
-export AbstractKifu
-export AbstractMetaKifu
-export Kifu
-export MetaKifu
 
 # Export an enum's all instances
 # Thanks to Alex Arslan
@@ -19,110 +12,73 @@ macro exportinstances(enum)
     return :($eval($__module__, Expr(:export, map(Symbol, instances($enum))...)))
 end
 
-# include("util.jl")
-include("sengo.jl")
-include("koma.jl")
-include("masu.jl")
-include("mochigoma.jl")
-include("sengomochigoma.jl")
-include("banmen.jl")
-include("kyokumen.jl")
-include("coding.jl")
-
-"""
-    AbstractKifu
-
-棋譜を表す型。
-"""
-abstract type AbstractKifu end
-
-"""
-    AbstractMetaKifu
-
-メタデータ付き棋譜を表す型。
-"""
-abstract type AbstractMetaKifu <: AbstractKifu end
-
-"""
-    Kifu
-
-棋譜を表す型。
-"""
-mutable struct Kifu <: AbstractKifu
-end
-
-"""
-    MetaKifu
-
-メタデータ付き棋譜を表す型。
-"""
-mutable struct MetaKifu <: AbstractMetaKifu
-end
-
-# module CSA
-# import ..AbstractMetaKifu
-# mutable struct CSAKifu <: AbstractMetaKifu
-# end
-# end # module CSA
-
-# module JKF
-# using JSON
-# # import ..CSA
-# import ..AbstractMetaKifu
-# mutable struct JKFKifu <: AbstractMetaKifu
-# end
-# end # module JKF
-
-# module KI2
-# import ..AbstractMetaKifu
-# mutable struct KI2Kifu <: AbstractMetaKifu
-# end
-# end # module KI2
-
-# include("SFEN.jl")
-# include("CSA.jl")
-# include("JKF.jl")
-
-# using .SFEN, .CSA, .JKF
-# export SFEN, CSA, JKF
-
-# @enum KifuFormat kifu_sfen kifu_csa kifu_jkf kifu_ki2 kifu_kif
-
-# const kifu_format_to_module = Dict(
-#     kifu_sfen => SFEN,
-#     kifu_csa => CSA,
-#     kifu_jkf => JKF
-# )
-
-# function Sengo(str::AbstractString, f::KifuFormat)
-#     kifu_format_to_module[f].Sengo(str)
-# end
-# Sengo(str::AbstractString, m::Module) = m.Sengo(str)
-# Koma(str::AbstractString, m::Module) = m.Koma(str)
-# Masu(str::AbstractString, m::Module) = m.Masu(str)
-# Banmen(str::AbstractString, m::Module) = m.Banmen(str)
-# Kyokumen(str::AbstractString, m::Module) = m.Kyokumen(str)
-# SengoFromSFEN(str::AbstractString) = Sengo(str, SFEN)
-# export SengoFromSFEN
-
-include("encodedkyokumen.jl")
-
-# # include("jsamotion.jl")
+include("color.jl")
+include("piece.jl")
+include("square.jl")
+include("coordinate.jl")
+include("board.jl")
+include("hand.jl")
+include("position.jl")
+include("motion.jl")
 include("move.jl")
 
-# include("attack.jl")
+include("CSA.jl")
+include("USI.jl")
+include("JSA.jl")
 
-# include("io.jl")
+end # module
 
-# include("book.jl")
-# include("kifu.jl")
+# module Shogi
 
-# include("sfen/SFEN.jl")
-# include("csa/CSA.jl")
-# include("kakinoki/kakinoki.jl")
+# using StaticArrays
+# using Graphs
+# using MetaGraphNext
 
-# include("usi.jl")
+# abstract type AbstractColor end
+# abstract type AbstractPiece end
+# abstract type AbstractSquare end
+# abstract type AbstractBoard end
+# abstract type AbstractHand end
+# abstract type AbstractPosition end
 
-# include("makeimage.jl")
+# struct Color <: AbstractColor
+#     n::Int8
+# end
 
-end
+# const Black = Color(0)
+# const White = Color(1)
+
+# struct Piece <: AbstractPiece
+#     n::Int8
+# end
+
+# struct Square <: AbstractSquare
+#     n::Int8
+# end
+
+# struct Board <: AbstractBoard
+#     matrix::SMatrix{9,9,Square}
+# end
+
+# struct Hand <: AbstractHand
+# end
+
+# struct Position <: AbstractPosition
+# end
+
+# struct Move
+# end
+
+# struct Book
+#     graph::MetaGraph
+# end
+
+# struct Kifu
+
+# end
+
+# function Book()
+#     MetaGraph(Graph(), VertexData = Position, EdgeData = )
+# end
+
+# end
