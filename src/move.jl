@@ -84,7 +84,7 @@ function generatePseudoLegalMoves(position::Position)
                     z0 = [x, y]
                     z1 = direct_target
                     if 1 ≤ z1[1] ≤ 9 && 1 ≤ z1[2] ≤ 9 && !board_ally[z1...]
-                        if !(piece == PAWN && board_onerank[x, y]) && !(piece == KNIGHT && board_tworank[x, y])
+                        if !(piece == PAWN && board_onerank[z1...]) && !(piece == KNIGHT && board_tworank[z1...])
                             push!(ret, Move(Coordinate(z0...), Coordinate(z1...)))
                         end
                         if (board_promotable[z0...] || board_promotable[z1...]) && ispromotable(Piece(position[z0...]))
@@ -97,7 +97,7 @@ function generatePseudoLegalMoves(position::Position)
                     for n in 1:8
                         z = [x, y] + n * [1, sign(side)] .* p
                         if 1 ≤ z[1] ≤ 9 && 1 ≤ z[2] ≤ 9 && !board_ally[z...]
-                            if !(piece == LANCE && board_onerank[x, y])
+                            if !(piece == LANCE && board_onerank[z...])
                                 push!(ret, Move(Coordinate(x, y), Coordinate(z...)))
                             end
                             if (board_promotable[x, y] || board_promotable[z...]) && ispromotable(Piece(position[x, y]))
