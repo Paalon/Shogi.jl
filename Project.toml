@@ -1,7 +1,7 @@
 name = "Shogi"
 uuid = "87abda5e-8ea1-4e4e-a620-0b32156d0927"
 authors = ["Koki Fushimi <paalon1936@gmail.com>"]
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 Bijections = "e2ed5e7c-b2de-5872-ae92-c73ca462fb04"
